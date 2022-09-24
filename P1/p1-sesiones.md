@@ -164,9 +164,7 @@ sshd: ... : spawn echo \`bin/date\`\: intento de conexión de %a a %A \[PERMITID
 
 ```
 
-sshd: rangos eduroam y vpn : spawn echo \`bin/date\`\: intento de conexión de %a a %A \[PERMITIDO\] >> /home/lsi/logssh
-
-dir ipv6 entre corchetes -> sshd:[::1],[2002:_:_::1]
+> direcciones ipv6 van entre corchetes: `sshd: [::1],[2002:_:_::1]`
 
 rango ipv6 udc -> 2001:720:121c:
 
@@ -178,16 +176,19 @@ rsyslog, syslog
 
 > niveles de gravedad, de - a +: debug, info, notice, warning, err, crit, alert, emerg
 
-`systemctl restart rsyslog.service`: Actualiza los cambios en `rsyslog.conf`
+`systemctl restart rsyslog.service`: Actualiza los cambios en `rsyslog.conf`.
 
-`#logger -p mail.err "Hola"`
-`#tail -f /var/log/mail.log`
+`#logger -p mail.err "Hola"`: Añade un mensaje de error "Hola" en el archivo `mail.err`.
+
+`#tail -f /var/log/mail.log`: Muestra las últimas líneas del archivo en directo.
 
 apartado O: ipv6
+
 quitar ipv6? (ubuntu y máquina)
 
 
-montar tunel 6 to 4:
+##### Montar tunel 6 to 4:
+
 10.11.48.50
 2002:a0b:3032:
 
@@ -201,10 +202,13 @@ endpoint any
 local 10.11.48.50
 ```
 
-- para quitar ipv6:
-/etc/sysctl.conf -> para configurar variables 
-sysctl -p (para activar los cambios)
-sysctl -a (visualizar)
+##### Quitar ipv6:
+
+`/etc/sysctl.conf`: Fichero de configuración de variables. 
+
+`sysctl -p`: Activa los cambios en `sysctl.conf`.
+
+`sysctl -a`: Muestra.
 
 EN LA PRÁCTICA IPV6 LEVANTADO, 
 CONFIGURADO EL TUNEL ETC
@@ -212,44 +216,50 @@ SABER QUITAR IPV6
 
 instalar thc-ipv6 (echarle un ojo)
 
-- limpiar disco -> se comprueba espacio con df -H
-apt clean
-apt autoclean
-apt autoremove
+##### Limpiar disco:
 
-borrar man
-apt remove --purge man-db
+`apt autoclean`: Elimina de la caché los paquetes de versiones antiguas e innecesarias.
+`apt clean`: Elimina **todos** los paquetes de la caché.
+`apt autoremove`: Elimina aquellos paquetes perdidos, generalmente instalados como dependencias de otras instalaciones, que ya no son necesarios.
+`apt --purge autoremove`: La opción `--purge` permite otras llamadas de *apt* para borrar también archivos de configuración y demás.
 
-borrar imagenes kernel antiguas
-uname -a (para ver kernel actual)
-apt --purge autoremove
-dpkg --list | grep linux-image <- miras todos los kernels
-apt-get --purge remove linux-image-4....... <- elimina un kernel en específico
+Borrar man: `apt remove --purge man-db`
 
-- sincronizar tiempo con compañero
+Borrar imagenes kernel antiguas:
+
+`uname -r`: Muestra kernel actual.
+
+`dpkg --list | grep linux-image`: Muestra los kernels que tenemos en el sistema.
+
+`apt-get --purge remove linux-image-4.......` Elimina un kernel en específico.
+
+##### Sincronizar tiempo con compañero:
+
 servidor ntp <-> cliente ntp
-docplayer.es/7992340-instalacion-y-configuracion-de-ntp.html
 
-`sudo apt install ntpdate ntp`
+[GUÍA DE CONFIGURACIÓN](https://docplayer.es/7992340-instalacion-y-configuracion-de-ntp.html)
 
-servicio -> ntp.service
-fich conf -> /etc/ntp.conf:
+`sudo apt install ntpdate ntp`: Instalamos las herramientas `ntpdate` y `ntp`.
+
+`/etc/ntp.conf`: Fichero de configuración del `ntp.service`
 
 restrict -4 default ______
 restrict -6 _______ ______
 
 comentar pool
 
+```bash
 server 127.127.1.1
 fudge 127.127.1.1 stratum 10
 restrict 10.11.49.106 mask 255.255.255.255
 restrict 127.127.1.1 mask __________ noquery
+```
 
-restrict ignore es el más restrictivo
-noquery no permite consultas
+- `restrict ignore` es el más restrictivo.
 
+- `noquery` no permite consultas.
 
-ntpdate a la ip del compañero para comprobar q el servidor está OK
+ntpdate a la ip del compañero para comprobar q el servidor está OK.
 
 /etc/ntp.conf:
 
@@ -259,14 +269,13 @@ server ipcompañero
 ...
 
 comprobar que está todo bien:
-ntpq -pn
-ntpdc -n
+
+`ntpq -pn`
+
+`ntpdc -n`
 
 el reach se incrementa cada pool segundos (o pull, sabe dios)
 
 - rsyslog
 
 ## SESIÓN 3
-
-
-
