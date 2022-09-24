@@ -2,7 +2,7 @@
 
 > ip: `10.11.48.50`, máquina: `1.2.10-48.50`, ip compañero -> `10.11.49.106`
 
-En la primera parte se muestran los apuntes de las 3 sesiones. En la siguiente parte se mostrarán los apartados con sus soluciones.
+En esta primera parte se muestran los apuntes de las 3 sesiones. En [`p1-enunciado`](./p1-enunciado.md) se mostrarán los apartados con sus soluciones.
 
 ## SESIÓN 0
 
@@ -83,6 +83,8 @@ deb-src http://deb.debian.org/debian/ bullseye-updates main contrib
 
 `systemctl list-unit-files --type=service`:  muestra los servicios que hay activados o desactivados actualmente
 
+> `static` -> activo con dependencias. `enable` -> activo sin dependencias
+
 **!! importante saber qué son services y targets**
 
 #### Directorios importantes:
@@ -111,28 +113,26 @@ deb-src http://deb.debian.org/debian/ bullseye-updates main contrib
 
 > route add a la ip -> 10.11.52.0 que no existe (añadir una entrada en la tabla de routing)
 
-`netstat -i`:
+`netstat -i`: Abre el menú general de netstat
 
-`ss -a`: 
+`ss -a`: Muestra todos los sockets TCP/UDP/RAW/UNIX.
 
-`lsof -ni`: 
+`lsof -ni`: Muestra los detalles de las conexiones de red abiertas
 
-##### Decidir qué servicios desactivar y cuales dejar ej: ModemManager.service o algo asi
+##### Decidir qué servicios innecesarios desactivar.
 
-systemctl stop X
-systemctl disable X
-systemctl mask X (crea un symlink a /dev/null) para que no se trate de recuperar
-systemctl unmask X para que deje de apuntar a /dev/null
+1. `systemctl stop X` (si está activo).
 
-static -> dependencias activo
-enable -> sin dependencias activo
+2. `systemctl disable X`.
+
+3. `systemctl mask X` crea un symlink a `/dev/null` para que ningún otro servicio lo pueda rehabilitar.
+
+4. `systemctl unmask X` elimina el symlink a `/dev/null`.
 
 bluetooth, dbus-org.bluez, ModemManager, switcheroo-control, wpa-supplicant
 // ? -> cups socket, cups service, cups browsed
 
-
-iptraf (mirar para monitorizar)
-
+`iptraf`: herramienta para monitorizar redes.
 
 ## SESIÓN 2
 
@@ -147,9 +147,10 @@ sshd: rangos eduroam y vpn : spawn echo %a %a >> /home/lsi/logssh
 
 dir ipv6 entre corchetes -> sshd:[::1],[2002:_:_::1]
 
-ifrango ipv6 udc -> 2001:720:121c:
+rango ipv6 udc -> 2001:720:121c:
 
 rango vpn: 10.30.8.X - 10.30.15.X
+
 rando eduroam: conectarse a eduroam, miramos la red, vemos netmask (desde gateway)
 
 rsyslog, syslog 
@@ -206,7 +207,7 @@ apt-get --purge remove linux-image-4....... <- elimina un kernel en específico
 servidor ntp <-> cliente ntp
 docplayer.es/7992340-instalacion-y-configuracion-de-ntp.html
 
-apt install ntpdate ntp
+`sudo apt install ntpdate ntp`
 
 servicio -> ntp.service
 fich conf -> /etc/ntp.conf:
@@ -239,8 +240,6 @@ ntpq -pn
 ntpdc -n
 
 el reach se incrementa cada pool segundos (o pull, sabe dios)
-
-
 
 - rsyslog
 
