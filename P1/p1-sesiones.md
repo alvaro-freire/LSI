@@ -24,6 +24,10 @@ En esta primera parte se muestran los apuntes de las 3 sesiones. En [`p1-enuncia
 * `systemctl stop avahi-daemon.service` y `systemctl disable avahi.daemon.service`
 * `systemctl stop NetworkManager.service` y `systemctl disable NetworkManager.service`
 
+#### Reiniciar interfaz de red:
+
+* `systemctl restart nerworking.service`
+
 ---
 
 `ps -eaf`: 
@@ -35,10 +39,6 @@ En esta primera parte se muestran los apuntes de las 3 sesiones. En [`p1-enuncia
   * Muestra información sobre todos las unidades que tiene systemd en memoria.
 
 ---
-
-#### Reiniciar interfaz de red:
-
-* `systemctl restart nerworking.service`
 
 #### Actualizar a Debian 11
 
@@ -136,14 +136,25 @@ bluetooth, dbus-org.bluez, ModemManager, switcheroo-control, wpa-supplicant
 
 ## SESIÓN 2
 
-/etc/hosts.deny -> denegar 
-all:all  (servicio:máquinas)
+##### TCP Wrappers
+
+`/etc/hosts.deny` y `/etc/hosts.allow` controlan los TCP Wrappers. El archivo `hosts.allow` enumera las reglas que permiten el acceso, mientras que `hosts.deny` enumera las que deniegan dicho acceso.
+
+(servicio:máquinas)
+
+##### `/etc/hosts.deny`:
+
+```bash
+all:all
+```
 
 mirar -> servicio:máquinas: twist... (o spawn)
 
-/etc/hosts.allow
+##### `/etc/hosts.allow`:
+
 sshd: 127.0.0.1, 10.11.48.COMP, 10.11.50.COMP 
-sshd: rangos eduroam y vpn : spawn echo %a %a >> /home/lsi/logssh
+
+sshd: rangos eduroam y vpn : spawn echo \`bin/date\`\: conexión de %a a %A satisfactoria >> /home/lsi/logssh
 
 dir ipv6 entre corchetes -> sshd:[::1],[2002:_:_::1]
 
@@ -151,14 +162,15 @@ rango ipv6 udc -> 2001:720:121c:
 
 rango vpn: 10.30.8.X - 10.30.15.X
 
-rando eduroam: conectarse a eduroam, miramos la red, vemos netmask (desde gateway)
+rango eduroam: conectarse a eduroam, miramos la red, vemos netmask (desde gateway)
 
 rsyslog, syslog 
 
 /etc/rsyslog.conf -> subsistemas 
-niveles de gravedad, de - a +: debug, info, notice, warning, err, crit, alert, emerg
 
-para actualizar cambios: systemctl restart rsyslog.service
+> niveles de gravedad, de - a +: debug, info, notice, warning, err, crit, alert, emerg
+
+`systemctl restart rsyslog.service`: Actualiza los cambios en `rsyslog.conf`
 
 `#logger -p mail.err "Hola"`
 `#tail -f /var/log/mail.log`
@@ -171,12 +183,15 @@ montar tunel 6 to 4:
 10.11.48.50
 2002:a0b:3032:
 
-/etc/network/interfaces
+##### `/etc/network/interfaces`:
+
+```bash
 iface 6to4 inet6 v4tunnel
 address 2002:a0b:3032:    ::1
 netmask 16
 endpoint any
 local 10.11.48.50
+```
 
 - para quitar ipv6:
 /etc/sysctl.conf -> para configurar variables 
