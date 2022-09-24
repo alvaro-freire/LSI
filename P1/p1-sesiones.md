@@ -145,22 +145,30 @@ bluetooth, dbus-org.bluez, ModemManager, switcheroo-control, wpa-supplicant
 ##### `/etc/hosts.deny`:
 
 ```bash
-all:all
+ALL: ALL: spawn echo \`bin/date\`\: intento de conexión de %a a %A \[DENEGADO\] >> /home/lsi/logssh`: DENY
 ```
 
-mirar -> servicio:máquinas: twist... (o spawn)
+##### spawn
 
 ##### `/etc/hosts.allow`:
 
-sshd: 127.0.0.1, 10.11.48.COMP, 10.11.50.COMP 
+```bash
+# localhost + comapañero:
+sshd: 127.0.0.1, 10.11.48.106, 10.11.50.106: spawn echo \`bin/date\`\: intento de conexión de %a a %A \[PERMITIDO\] >> /home/lsi/logssh
 
-sshd: rangos eduroam y vpn : spawn echo \`bin/date\`\: conexión de %a a %A satisfactoria >> /home/lsi/logssh
+# vpn udc:
+sshd: 10.30.8.0/255.255.248.0: spawn echo \`bin/date\`\: intento de conexión de %a a %A \[PERMITIDO\] >> /home/lsi/logssh
+
+# eduroam:
+sshd: ... : spawn echo \`bin/date\`\: intento de conexión de %a a %A \[PERMITIDO\] >> /home/lsi/logssh 
+
+```
+
+sshd: rangos eduroam y vpn : spawn echo \`bin/date\`\: intento de conexión de %a a %A \[PERMITIDO\] >> /home/lsi/logssh
 
 dir ipv6 entre corchetes -> sshd:[::1],[2002:_:_::1]
 
 rango ipv6 udc -> 2001:720:121c:
-
-rango vpn: 10.30.8.X - 10.30.15.X
 
 rango eduroam: conectarse a eduroam, miramos la red, vemos netmask (desde gateway)
 
