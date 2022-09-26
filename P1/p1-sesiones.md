@@ -168,8 +168,6 @@ sshd: 10.20.32.0/255.255.248.0: spawn echo \`bin/date\`\: intento de conexión d
 
 rango ipv6 udc -> 2001:720:121c:
 
-rango eduroam: conectarse a eduroam, miramos la red, vemos netmask (desde gateway)
-
 rsyslog, syslog 
 
 /etc/rsyslog.conf -> subsistemas 
@@ -183,9 +181,6 @@ rsyslog, syslog
 `#tail -f /var/log/mail.log`: Muestra las últimas líneas del archivo en directo.
 
 apartado O: ipv6
-
-quitar ipv6? (ubuntu y máquina)
-
 
 ##### Montar tunel 6 to 4:
 
@@ -225,7 +220,7 @@ instalar thc-ipv6 (echarle un ojo)
 
 Borrar man: `apt remove --purge man-db`
 
-Borrar imagenes kernel antiguas:
+Borrar imágenes kernel antiguas:
 
 `uname -r`: Muestra kernel actual.
 
