@@ -160,7 +160,7 @@ sshd: 127.0.0.1, 10.11.48.106, 10.11.50.106: spawn echo \`bin/date\`\: intento d
 sshd: 10.30.8.0/255.255.248.0: spawn echo \`bin/date\`\: intento de conexión de %a a %A \[PERMITIDO\] >> /home/lsi/logssh
 
 # eduroam:
-sshd: ... : spawn echo \`bin/date\`\: intento de conexión de %a a %A \[PERMITIDO\] >> /home/lsi/logssh 
+sshd: 10.20.32.0/255.255.248.0: spawn echo \`bin/date\`\: intento de conexión de %a a %A \[PERMITIDO\] >> /home/lsi/logssh 
 
 ```
 
