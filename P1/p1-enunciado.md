@@ -828,6 +828,8 @@ Haga todo tipo de propuestas sobre los siguientes aspectos: ¿Qué problemas de 
 
 En la plataforma de virtualización corren, entre otrs equipos, más de 200 máquinas virtuales para LSI. Como los recursos son limitados, y el disco duro también, identifique todas aquellas acciones que pueda hacer para reducir el espacio de disco ocupado.
 
+- `df -H`: Muestra información sobre el almacenamiento de los sistemas de ficheros montados en la máquina.
+
 - `apt autoclean`: Elimina de la caché los paquetes de versiones antiguas e innecesarias.
 
 - `apt clean`: Elimina **todos** los paquetes de la caché.
@@ -853,3 +855,4 @@ En la plataforma de virtualización corren, entre otrs equipos, más de 200 máq
 	ii  linux-image-5.10.0-18-amd64           5.10.140-1                       amd64        Linux 5.10 for 64-bit PCs (signed)
 	ii  linux-image-amd64                     5.10.140-1                       amd64        Linux for 64-bit PCs (meta-package)
 	```
+
