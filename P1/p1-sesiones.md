@@ -191,10 +191,11 @@ apartado O: ipv6
 
 ```bash
 iface 6to4 inet6 v4tunnel
-address 2002:a0b:3032:    ::1
-netmask 16
-endpoint any
-local 10.11.48.50
+    address 2002:a0b:3032::1
+    netmask 16
+    gateway ::10.11.48.1
+    endpoint any
+    local 10.11.48.50
 ```
 
 ##### Quitar ipv6:
