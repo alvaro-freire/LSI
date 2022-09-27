@@ -463,6 +463,18 @@ En el apartado d) se ha familiarizado con los services que corren en su sistema.
 todos ellos?. Si identifica servicios no necesarios, proceda adecuadamente. Una limpieza no le
 vendrá mal a su equipo, tanto desde el punto de vista de la seguridad, como del rendimiento.
 
+Se han identificado varios services no necesarios, tanto en el inicio, como en la máquina en sí,
+por sus características de uso por ssh.
+- `systemctl mask avahi-daemon.socket`
+- `systemctl mask avahi-daemon.service`
+- `systemctl disable NetworkManager.service`
+- `systemctl mask cups`: los servicios para la impresión no serán necesarios
+- `systemctl mask cups-browsed.service`
+- `systemctl mask bluetooth`: la máquina virtual no usará bluetooth
+- `systemctl disable accounts-daemon.service`: si es necesario, GNOME lo iniciará
+- `systemctl disable cron.service`: se podrá iniciar después. Por otra parte, `anacron.service` no se salta los eventos programados, aunque la máquina se apague 
+
+
 ### Apartado I
 
 Diseñe y configure un pequeño “script” y defina la correspondiente unidad de tipo service para
