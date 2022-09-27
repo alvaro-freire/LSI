@@ -10,14 +10,16 @@ Configure su máquina virtual de laboratorio con los datos proporcionados por el
 Analice los ficheros básicos de configuración (interfaces, hosts, resolv.conf,
 nsswitch.conf, sources.list, etc.)
 
-`/etc/network/interfaces`:
+1. Modificar el fichero `/etc/network/interfaces`:
+
+> Mis IPs son `10.11.48.50` y `10.11.50.50`. La configuración de este fichero dependerá de tus IPs.
 
 ```
 # This file describes the network interfaces available on your system
 # and how to activate them. For more information, see interfaces(5).
 #source /etc/network/interfaces.d/*
 # The loopback network interface
-auto lo ens33
+auto lo ens33 ens34
 iface lo inet loopback
 
 iface ens33 inet static
@@ -26,6 +28,12 @@ iface ens33 inet static
 	broadcast 10.11.49.255
 	network 10.11.48.0
 	gateway 10.11.48.1
+
+iface ens34 inet static
+	address 10.11.50.50
+	netmask 255.255.254.0
+	broadcast 10.11.51.255
+	network 10.11.50.0
 ```
 
 `/etc/hosts`:
@@ -344,10 +352,110 @@ sep 27 17:11:15 debian systemd[1]: Finished Raise network interfaces.
 Identifique y cambie los principales parámetros de su segundo interface de red (ens34).
 Configure un segundo interface lógico. Al terminar, déjelo como estaba.
 
+1. Estado inicial de `ens34`:
+
+```console
+root@debian:/home/lsi# ifconfig ens34
+ens34: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 10.11.50.50  netmask 255.255.254.0  broadcast 10.11.51.255
+        inet6 fe80::250:56ff:fe97:cee4  prefixlen 64  scopeid 0x20<link>
+        ether 00:50:56:97:ce:e4  txqueuelen 1000  (Ethernet)
+        RX packets 6843  bytes 1563475 (1.4 MiB)
+        RX errors 0  dropped 2420  overruns 0  frame 0
+        TX packets 19  bytes 1426 (1.3 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+        device interrupt 16  base 0x2080  
+
+```
+
+2. Configuración del segundo interface de red (`ens34`):
+
+```console
+root@debian:/home/lsi# ifconfig ens34 down
+root@debian:/home/lsi# ifconfig ens34 mtu 1200
+root@debian:/home/lsi# ifconfig ens34 hw ether 00:1e:2e:b5:18:07
+root@debian:/home/lsi# ifconfig ens34 10.11.50.51 netmask 255.255.254.0
+root@debian:/home/lsi# ifconfig ens34 up
+root@debian:/home/lsi# ifconfig ens34
+ens34: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1200
+        inet 10.11.50.51  netmask 255.255.254.0  broadcast 10.11.51.255
+        ether 00:1e:2e:b5:18:07  txqueuelen 1000  (Ethernet)
+        RX packets 6867  bytes 1568069 (1.4 MiB)
+        RX errors 0  dropped 2431  overruns 0  frame 0
+        TX packets 19  bytes 1426 (1.3 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+        device interrupt 16  base 0x2080
+```
+
+3. Configuración de una interfaz lógica:
+
+```console
+root@debian:/home/lsi# ifconfig ens34:1 192.168.1.1 netmask 255.255.255.0
+root@debian:/home/lsi# ifconfig ens34:1 up
+root@debian:/home/lsi# ifconfig
+ens34: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1200
+        inet 10.11.50.51  netmask 255.255.254.0  broadcast 10.11.51.255
+        ether 00:1e:2e:b5:18:07  txqueuelen 1000  (Ethernet)
+        RX packets 6898  bytes 1574835 (1.5 MiB)
+        RX errors 0  dropped 2444  overruns 0  frame 0
+        TX packets 19  bytes 1426 (1.3 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+        device interrupt 16  base 0x2080  
+
+ens34:1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1200
+        inet 192.168.1.1  netmask 255.255.255.0  broadcast 192.168.1.255
+        ether 00:1e:2e:b5:18:07  txqueuelen 1000  (Ethernet)
+        device interrupt 16  base 0x2080
+```
+
+- Como no hemos hecho nada persistente, si queremos dejar todo como estaba simplemente hacemos `reboot`. Para persistir los cambios debemos hacerlos en `/etc/network/interfaces`.
+
 ### Apartado G
 
 ¿Qué rutas (routing) están definidas en su sistema?. Incluya una nueva ruta estática a una
 determinada red.
+
+1. Rutas definidas en el sistema:
+
+```console
+root@debian:/home/lsi# ip route show
+default via 10.11.48.1 dev ens33 onlink 
+10.11.48.0/23 dev ens33 proto kernel scope link src 10.11.48.50 
+10.11.50.0/23 dev ens34 proto kernel scope link src 10.11.50.50 
+169.254.0.0/16 dev ens33 scope link metric 1000
+```
+
+```console
+root@debian:/home/lsi# route
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+default         _gateway        0.0.0.0         UG    0      0        0 ens33
+10.11.48.0      0.0.0.0         255.255.254.0   U     0      0        0 ens33
+10.11.50.0      0.0.0.0         255.255.254.0   U     0      0        0 ens34
+link-local      0.0.0.0         255.255.0.0     U     1000   0        0 ens33
+```
+
+2. Nueva ruta: `ip route add 10.11.52.0/24 via 10.11.48.1`
+
+```console
+root@debian:/home/lsi# ip route show
+default via 10.11.48.1 dev ens33 onlink 
+10.11.48.0/23 dev ens33 proto kernel scope link src 10.11.48.50 
+10.11.50.0/23 dev ens34 proto kernel scope link src 10.11.50.50 
+10.11.52.0/24 via 10.11.48.1 dev ens33 
+169.254.0.0/16 dev ens33 scope link metric 1000
+```
+
+```console
+root@debian:/home/lsi# route
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+default         _gateway        0.0.0.0         UG    0      0        0 ens33
+10.11.48.0      0.0.0.0         255.255.254.0   U     0      0        0 ens33
+10.11.50.0      0.0.0.0         255.255.254.0   U     0      0        0 ens34
+10.11.52.0      _gateway        255.255.255.0   UG    0      0        0 ens33
+link-local      0.0.0.0         255.255.0.0     U     1000   0        0 ens33
+```
 
 ### Apartado H
 
