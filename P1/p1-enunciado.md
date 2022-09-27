@@ -561,11 +561,25 @@ Created symlink /etc/systemd/system/multi-user.target.wants/notify-boot.service 
 
 Identifique las conexiones de red abiertas a y desde su equipo.
 
+```console
+lsi@debian:~$ netstat -putona 
+```
+Las opciones se describen:
+- `p`: programa
+- `u`: puertos UDP
+- `t`: puertos TCP
+- `o`: mostrar timers
+- `n`: numeric
+- `a`: all
+
+
 ### Apartado K
 
 Nuestro sistema es el encargado de gestionar la CPU, memoria, red, etc., como soporte a los datos
 y procesos. Monitorice en “tiempo real” la información relevante de los procesos del sistema y
 los recursos consumidos. Monitorice en “tiempo real” las conexiones de su sistema.
+
+Para los procesos, usar el comando `top`, y para las conexiones, el descrito en el apartado anterior: `netstat -putona`.
 
 ### Apartado L
 
