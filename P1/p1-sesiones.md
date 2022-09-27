@@ -145,7 +145,7 @@ NetworkManager, avahi-daemon, accounts-daemon, bluetooth, dbus-org.bluez, ModemM
 ##### `/etc/hosts.deny`:
 
 ```bash
-ALL: ALL: spawn echo \`bin/date\`\: intento de conexión de %a a %A \[DENEGADO\] >> /home/lsi/logssh`: DENY
+ALL: ALL: spawn echo \`/bin/date\`\: intento de conexión de %a a %A \[DENEGADO\] >> /home/lsi/logssh`: DENY
 ```
 
 ##### spawn
@@ -154,13 +154,13 @@ ALL: ALL: spawn echo \`bin/date\`\: intento de conexión de %a a %A \[DENEGADO\]
 
 ```bash
 # localhost + comapañero:
-sshd: 127.0.0.1, 10.11.48.106, 10.11.50.106: spawn echo \`bin/date\`\: intento de conexión de %a a %A \[PERMITIDO\] >> /home/lsi/logssh
+sshd: 127.0.0.1, 10.11.48.106, 10.11.50.106: spawn echo \`/bin/date\`\: intento de conexión de %a a %A \[PERMITIDO\] >> /home/lsi/logssh
 
 # vpn udc:
-sshd: 10.30.8.0/255.255.248.0: spawn echo \`bin/date\`\: intento de conexión de %a a %A \[PERMITIDO\] >> /home/lsi/logssh
+sshd: 10.30.8.0/255.255.248.0: spawn echo \`/bin/date\`\: intento de conexión de %a a %A \[PERMITIDO\] >> /home/lsi/logssh
 
 # eduroam:
-sshd: 10.20.32.0/255.255.248.0: spawn echo \`bin/date\`\: intento de conexión de %a a %A \[PERMITIDO\] >> /home/lsi/logssh 
+sshd: 10.20.32.0/255.255.248.0: spawn echo \`/bin/date\`\: intento de conexión de %a a %A \[PERMITIDO\] >> /home/lsi/logssh 
 
 ```
 
