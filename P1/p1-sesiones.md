@@ -129,7 +129,7 @@ deb-src http://deb.debian.org/debian/ bullseye-updates main contrib
 
 4. `systemctl unmask X` elimina el symlink a `/dev/null`.
 
-bluetooth, dbus-org.bluez, ModemManager, switcheroo-control, wpa-supplicant
+NetworkManager, avahi-daemon, accounts-daemon, bluetooth, dbus-org.bluez, ModemManager, switcheroo-control, wpa-supplicant
 // ? -> cups socket, cups service, cups browsed
 
 `iptraf`: herramienta para monitorizar redes.
