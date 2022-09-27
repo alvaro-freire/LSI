@@ -156,9 +156,10 @@ referencia (desde la pulsación del botón de arranque hasta la pantalla de logi
 
 3. Para cambiarlo: `systemctl set-default TARGET`
 
-4. Targets del sistema y su estado: `systemctl list-units --type target --all`
+4. Targets del sistema y su estado:
 
-```
+```console
+root@debian:/home/lsi# systemctl list-unit-files --type=target
 UNIT FILE                     STATE    VENDOR PRESET
 basic.target                  static   -
 blockdev@.target              static   -
@@ -172,9 +173,10 @@ usb-gadget.target             static   -
 67 unit files listed.
 ```
 
-5. Servicios: `systemctl list-unit-files --type=service`
+5. Servicios:
 
-```
+```console
+root@debian:/home/lsi# systemctl list-unit-files --type=service
 UNIT FILE                              STATE           VENDOR PRESET
 accounts-daemon.service                masked          enabled
 alsa-restore.service                   static          -
@@ -198,16 +200,144 @@ x11-common.service                     masked          enabled
 173 unit files listed.
 ```
 
+6. Otro tipo de unidades: `systemctl list-units -t help`
+
+```console
+root@debian:/home/lsi# systemctl list-units -t help
+Available unit types:
+service
+mount
+swap
+socket
+target
+device
+automount
+timer
+path
+slice
+scope
+```
+
 ### Apartado D
 
 Determine los tiempos aproximados de botado de su kernel y del userspace. Obtenga la relación
 de los tiempos de ejecución de los services de su sistema.
+
+1. Tiempos aproximados de botado de kernel y userspace:
+
+```console
+root@debian:/home/lsi# systemd-analyze
+Startup finished in 3.544s (kernel) + 34.433s (userspace) = 37.978s
+graphical.target reached after 34.368s in userspace
+```
+
+2. Relación de tiempos de ejecución y services:
+
+```console
+root@debian:/home/lsi# systemd-analyze blame
+19.260s plymouth-quit-wait.service
+11.564s apparmor.service
+ 2.505s systemd-udev-settle.service
+ 2.494s ifupdown-pre.service
+ 2.448s dev-sda1.device
+ 2.171s udisks2.service
+ 1.847s accounts-daemon.service
+ 1.769s NetworkManager.service
+ 1.739s polkit.service
+ 1.718s apt-daily-upgrade.service
+ 1.435s apt-daily.service
+ 1.249s avahi-daemon.service
+ 1.216s switcheroo-control.service
+ 1.193s systemd-logind.service
+ 1.179s wpa_supplicant.service
+ 1.172s user@117.service
+ 1.143s systemd-random-seed.service
+ 1.138s user@1000.service
+ 1.093s networking.service
+  613ms systemd-timesyncd.service
+  572ms packagekit.service
+  563ms systemd-udevd.service
+  561ms systemd-journald.service
+  529ms fwupd-refresh.service
+  514ms systemd-udev-trigger.service
+  453ms keyboard-setup.service
+  381ms gdm.service
+  374ms e2scrub_reap.service
+  322ms man-db.service
+  296ms ModemManager.service
+  229ms systemd-modules-load.service
+  222ms rsyslog.service
+  197ms logrotate.service
+  152ms upower.service
+  147ms systemd-tmpfiles-setup.service
+  133ms colord.service
+  129ms systemd-journal-flush.service
+  126ms plymouth-start.service
+  114ms dev-mqueue.mount
+  110ms dev-hugepages.mount
+  109ms systemd-tmpfiles-setup-dev.service
+  109ms sys-kernel-debug.mount
+  108ms sys-kernel-tracing.mount
+   97ms systemd-sysusers.service
+   90ms systemd-sysctl.service
+   76ms systemd-remount-fs.service
+   62ms modprobe@fuse.service
+   59ms user-runtime-dir@1000.service
+   54ms run-vmblock\x2dfuse.mount
+   49ms dev-sda5.swap
+   47ms plymouth-read-write.service
+   45ms systemd-user-sessions.service
+   45ms systemd-update-utmp-runlevel.service
+   41ms modprobe@drm.service
+```
 
 ### Apartado E
 
 Investigue si alguno de los servicios del sistema falla. Pruebe algunas de las opciones del sistema
 de registro journald. Obtenga toda la información journald referente al proceso de botado de la
 máquina. ¿Qué hace el systemd-timesyncd?
+
+1. Comprobar si algún servicio ha fallado:
+
+```console
+root@debian:/home/lsi# systemctl list-unit-files --type=service --failed
+UNIT FILE STATE VENDOR PRESET
+
+0 unit files listed.
+```
+
+2. `journalctl -u SERVICE` muestra el log de un servicio.
+
+```console
+root@debian:/home/lsi# journalctl -u networking.service
+-- Journal begins at Wed 2022-09-07 12:23:14 CEST, ends at Tue 2022-09-27 20:32:37 CEST. --
+sep 07 12:23:17 debian systemd[1]: Starting Raise network interfaces...
+sep 07 12:23:19 debian systemd[1]: Started Raise network interfaces.
+sep 11 19:53:22 debian systemd[1]: Stopping Raise network interfaces...
+sep 11 19:53:23 debian systemd[1]: networking.service: Succeeded.
+sep 11 19:53:23 debian systemd[1]: Stopped Raise network interfaces.
+-- Boot bf9029a9f3c84a03ae6c3f67eb80f1b0 --
+sep 11 19:53:47 debian systemd[1]: Starting Raise network interfaces...
+sep 11 19:53:49 debian systemd[1]: Finished Raise network interfaces.
+sep 20 17:23:22 debian systemd[1]: Stopping Raise network interfaces...
+sep 20 17:23:23 debian systemd[1]: networking.service: Succeeded.
+...
+...
+sep 27 16:05:30 debian systemd[1]: Stopped Raise network interfaces.
+-- Boot ea5ceb8c885f469aa1d8987cf1fcd24c --
+sep 27 16:05:48 debian systemd[1]: Starting Raise network interfaces...
+sep 27 16:05:49 debian systemd[1]: Finished Raise network interfaces.
+sep 27 17:10:55 debian systemd[1]: Stopping Raise network interfaces...
+sep 27 17:10:55 debian systemd[1]: networking.service: Succeeded.
+sep 27 17:10:55 debian systemd[1]: Stopped Raise network interfaces.
+-- Boot dfaedc0ebc374a848a16d5e14e110108 --
+sep 27 17:11:14 debian systemd[1]: Starting Raise network interfaces...
+sep 27 17:11:15 debian systemd[1]: Finished Raise network interfaces.
+```
+
+3. `journalctl -b` muestra el log del boot actual.
+
+4. `systemd-timesyncd` es un servicio del sistema que se usa para sincronizar el reloj local del sistema con un servidor NTP remoto.
 
 ### Apartado F
 
