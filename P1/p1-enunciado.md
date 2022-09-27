@@ -767,6 +767,8 @@ rtt min/avg/max/mdev = 0.058/0.059/0.061/0.001 ms
 shd: [2002:a0b:3032::1]/48, [2002:a0b:316a::1]/48
 ```
 
+> IP propia (ens33) + compañero (ens33 también).
+
 - Probamos *ssh*:
 
 ```console
