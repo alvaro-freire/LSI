@@ -562,16 +562,25 @@ Created symlink /etc/systemd/system/multi-user.target.wants/notify-boot.service 
 Identifique las conexiones de red abiertas a y desde su equipo.
 
 ```console
-lsi@debian:~$ netstat -putona 
+root@debian:/home/lsi# netstat -netua
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       User       Inode     
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      0          12650     
+tcp        0    356 10.11.48.50:22          10.30.10.89:50322       ESTABLISHED 0          22994     
+tcp6       0      0 :::22                   :::*                    LISTEN      0          12661     
+udp        0      0 10.11.50.50:123         0.0.0.0:*                           0          12589     
+udp        0      0 10.11.48.50:123         0.0.0.0:*                           0          12587     
+udp        0      0 127.0.0.1:123           0.0.0.0:*                           0          12585     
+udp        0      0 0.0.0.0:123             0.0.0.0:*                           0          12581     
+udp6       0      0 fe80::250:56ff:fe97:123 :::*                                118        12703     
+udp6       0      0 fe80::250:56ff:fe97:123 :::*                                118        12701     
+udp6       0      0 ::10.11.48.50:123       :::*                                0          12599     
+udp6       0      0 2002:a0b:3032::1:123    :::*                                0          12597     
+udp6       0      0 ::1:123                 :::*                                0          12591     
+udp6       0      0 :::123                  :::*                                0          12578
 ```
-Las opciones se describen:
-- `p`: programa
-- `u`: puertos UDP
-- `t`: puertos TCP
-- `o`: mostrar timers
-- `n`: numeric
-- `a`: all
 
+> Tengo dos conexiones *ssh* abiertas con la máquina, una como *root* y otra como *lsi*. El servidor *ssh* está escuchando en IPv4 e IPv6.
 
 ### Apartado K
 
@@ -579,7 +588,69 @@ Nuestro sistema es el encargado de gestionar la CPU, memoria, red, etc., como so
 y procesos. Monitorice en “tiempo real” la información relevante de los procesos del sistema y
 los recursos consumidos. Monitorice en “tiempo real” las conexiones de su sistema.
 
-Para los procesos, usar el comando `top`, y para las conexiones, el descrito en el apartado anterior: `netstat -putona`.
+1. Procesos del sistema en *tiempo real*:
+
+```console
+root@debian:/home/lsi# top
+
+top - 23:25:47 up  1:53,  1 user,  load average: 0,00, 0,00, 0,00
+Tasks: 188 total,   1 running, 187 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  0,0 us,  0,0 sy,  0,0 ni,100,0 id,  0,0 wa,  0,0 hi,  0,0 si,  0,0 st
+MiB Mem :   1479,2 total,   1072,1 free,    147,3 used,    259,8 buff/cache
+MiB Swap:   1534,0 total,   1534,0 free,      0,0 used.   1192,5 avail Mem 
+
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND                       
+   1017 root      20   0   10288   3892   3128 R   0,3   0,3   0:00.30 top                           
+      1 root      20   0   99500  10224   7656 S   0,0   0,7   0:01.75 systemd                       
+      2 root      20   0       0      0      0 S   0,0   0,0   0:00.00 kthreadd                      
+      3 root       0 -20       0      0      0 I   0,0   0,0   0:00.00 rcu_gp                        
+      4 root       0 -20       0      0      0 I   0,0   0,0   0:00.00 rcu_par_gp                    
+      6 root       0 -20       0      0      0 I   0,0   0,0   0:00.00 kworker/0:0H-events_highpri   
+      8 root       0 -20       0      0      0 I   0,0   0,0   0:00.11 kworker/0:1H-events_highpri   
+      9 root       0 -20       0      0      0 I   0,0   0,0   0:00.00 mm_percpu_wq
+      ...
+      ...
+      ...
+```
+
+2. Conexiones del sistema en *tiempo real*:
+
+```console
+root@debian:/home/lsi# netstat -netuac
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       User       Inode     
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      0          12650     
+tcp        0    356 10.11.48.50:22          10.30.10.89:50322       ESTABLISHED 0          22994     
+tcp6       0      0 :::22                   :::*                    LISTEN      0          12661     
+udp        0      0 10.11.50.50:123         0.0.0.0:*                           0          12589     
+udp        0      0 10.11.48.50:123         0.0.0.0:*                           0          12587     
+udp        0      0 127.0.0.1:123           0.0.0.0:*                           0          12585     
+udp        0      0 0.0.0.0:123             0.0.0.0:*                           0          12581     
+udp6       0      0 fe80::250:56ff:fe97:123 :::*                                118        12703     
+udp6       0      0 fe80::250:56ff:fe97:123 :::*                                118        12701     
+udp6       0      0 ::10.11.48.50:123       :::*                                0          12599     
+udp6       0      0 2002:a0b:3032::1:123    :::*                                0          12597     
+udp6       0      0 ::1:123                 :::*                                0          12591     
+udp6       0      0 :::123                  :::*                                0          12578     
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       User       Inode     
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      0          12650     
+tcp        0    304 10.11.48.50:22          10.30.10.89:50322       ESTABLISHED 0          22994     
+tcp6       0      0 :::22                   :::*                    LISTEN      0          12661     
+udp        0      0 10.11.50.50:123         0.0.0.0:*                           0          12589     
+udp        0      0 10.11.48.50:123         0.0.0.0:*                           0          12587     
+udp        0      0 127.0.0.1:123           0.0.0.0:*                           0          12585     
+udp        0      0 0.0.0.0:123             0.0.0.0:*                           0          12581     
+udp6       0      0 fe80::250:56ff:fe97:123 :::*                                118        12703     
+udp6       0      0 fe80::250:56ff:fe97:123 :::*                                118        12701     
+udp6       0      0 ::10.11.48.50:123       :::*                                0          12599     
+udp6       0      0 2002:a0b:3032::1:123    :::*                                0          12597     
+udp6       0      0 ::1:123                 :::*                                0          12591     
+udp6       0      0 :::123                  :::*                                0          12578
+```
+
+> Cada segundo se imprime la tabla con los datos de las conexiones del sistema.
+
 
 ### Apartado L
 
@@ -589,16 +660,151 @@ conexiones SSH a un determinado conjunto de IPs y denegar al resto. ¿Qué polí
 filtrado ha aplicado?. ¿Es lo mismo el tcp-wrapper que un firewall?. Procure en este proceso no
 perder conectividad con su máquina. No se olvide que trabaja contra ella en remoto por ssh.
 
+- `/etc/hosts.allow`: El sistema comprueba primero este archivo para las conexiones tcp.
+
+```bash
+# /etc/hosts.allow: list of hosts that are allowed to access the system.
+#                   See the manual pages hosts_access(5) and hosts_options(5).
+#
+# Example:    ALL: LOCAL @some_netgroup
+#             ALL: .foobar.edu EXCEPT terminalserver.foobar.edu
+#
+# If you're going to protect the portmapper use the name "rpcbind" for the
+# daemon name. See rpcbind(8) and rpc.mountd(8) for further information.
+#
+
+# localhost + pelayo
+sshd: 127.0.0.1, 10.11.49.106, 10.11.51.106: spawn echo `/bin/date`\: intento de conexión de %a a %A [PERMITIDO] >> /home/lsi/logssh
+
+# vpn udc:
+sshd: 10.30.8.0/255.255.248.0: spawn echo `/bin/date`\: intento de conexión de %a a %A [PERMITIDO] >> /home/lsi/logssh
+
+# eduroam:
+sshd: 10.20.32.0/255.255.248.0: spawn echo `/bin/date`\: intento de conexión de %a a %A [PERMITIDO] >> /home/lsi/logssh
+```
+
+- `/etc/hosts.deny`: Si la IP desde la que se están intentando conectar a nuestra máquina no coincide con ninguna en `/etc/hosts.allow`, se comprueba si está denegada aquí.
+
+```bash
+# /etc/hosts.deny: list of hosts that are _not_ allowed to access the system.
+#                  See the manual pages hosts_access(5) and hosts_options(5).
+#
+# Example:    ALL: some.host.name, .some.domain
+#             ALL EXCEPT in.fingerd: other.host.name, .other.domain
+#
+# If you're going to protect the portmapper use the name "rpcbind" for the
+# daemon name. See rpcbind(8) and rpc.mountd(8) for further information.
+#
+# The PARANOID wildcard matches any host whose name does not match its
+# address.
+#
+# You may wish to enable this to ensure any programs that don't
+# validate looked up hostnames still leave understandable logs. In past
+# versions of Debian this has been the default.
+# ALL: PARANOID
+
+ALL: ALL: spawn echo `bin/date`\: intento de conexión %a a %A [DENEGADA] >> /home/lsi/logssh
+```
+
+> Si no coincide con ninguna IP en el `hosts.deny` entonces de permite el acceso por defecto, por lo que denegamos todas las conexiones para que solo se acepten las que están en `hosts.allow`. 
+
+- TCPWrapper no es lo mismo que un *firewall*, pero trabaja de una forma similar en la capa 7.
+
 ### Apartado M
 
 Existen múltiples paquetes para la gestión de logs (syslog, syslog-ng, rsyslog). Utilizando el
 rsyslog pruebe su sistema de log local.
+
+```console
+root@debian:/home/lsi# logger hello
+root@debian:/home/lsi# logger "Esto es una prueba"
+root@debian:/home/lsi# tail -2 /var/log/syslog
+Sep 27 23:45:49 debian lsi: hello
+Sep 27 23:45:59 debian lsi: Esto es una prueba
+```
+
+> `tail -2` devuelve las dos últimas líneas de un fichero.
+
 
 ### Apartado N
 
 Configure IPv6 6to4 y pruebe ping6 y ssh sobre dicho protocolo. ¿Qué hace su tcp-wrapper en
 las conexiones ssh en IPv6? Modifique su tcp-wapper siguiendo el criterio del apartado h).
 ¿Necesita IPv6?. ¿Cómo se deshabilita IPv6 en su equipo?
+
+1. Añadir a `/etc/network/interfaces` la configuración de la nueva interfaz:
+
+```
+auto 6to4
+iface 6to4 inet6 v4tunnel
+	pre-up modprobe ipv6
+	address 2002:a0b:3032::1
+	netmask 16
+	gateway ::10.11.48.1
+	endpoint any
+	local 10.11.48.50
+```
+
+2. Activar la interfaz con `ifup 6to4`.
+
+3. Probamos a hacer un `ping6`:
+
+```console
+root@debian:/home/lsi# ping6 2002:a0b:3032::1
+PING 2002:a0b:3032::1(2002:a0b:3032::1) 56 data bytes
+64 bytes from 2002:a0b:3032::1: icmp_seq=1 ttl=64 time=0.061 ms
+64 bytes from 2002:a0b:3032::1: icmp_seq=2 ttl=64 time=0.058 ms
+64 bytes from 2002:a0b:3032::1: icmp_seq=3 ttl=64 time=0.058 ms
+^C
+--- 2002:a0b:3032::1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2050ms
+rtt min/avg/max/mdev = 0.058/0.059/0.061/0.001 ms
+```
+
+- Añadimos a `/etc/hosts.allow`:
+
+```bash
+shd: [2002:a0b:3032::1]/48, [2002:a0b:3232::1]/48, [2002:a0b:316a::1]/48, [2002:a0b:336a::1]/48
+```
+
+- Probamos *ssh*:
+
+```console
+root@debian:/home/lsi# ssh lsi@2002:a0b:3032::1
+lsi@2002:a0b:3032::1's password: 
+Linux debian 5.10.0-18-amd64 #1 SMP Debian 5.10.140-1 (2022-09-02) x86_64
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Wed Sep 28 00:04:25 2022 from 2002:a0b:3032::1
+lsi@debian:~$
+```
+
+- Pruebo con mi compañero también:
+
+```console
+lsi@debian:~$ ping6 2002:a0b:316a::1
+```
+
+```console
+lsi@debian:~$ ssh lsi@2002:a0b:316a::1
+```
+
+- No es necesario en nuestra red interna el uso de IPv6 gracias a nuestra interfaz 6to4.
+
+- Se dehabilita añadiendo estas líneas en el fichero `/etc/sysctl.conf`:
+
+```
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1
+```
+
+> Para que el sistema aplique los cambios: `sysctl -p`
 
 --- 
 
