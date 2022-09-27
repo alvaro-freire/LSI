@@ -214,8 +214,11 @@ instalar thc-ipv6 (echarle un ojo)
 ##### Limpiar disco:
 
 `apt autoclean`: Elimina de la caché los paquetes de versiones antiguas e innecesarias.
-`apt clean`: Elimina **todos** los paquetes de la caché.
+`
+apt clean`: Elimina **todos** los paquetes de la caché.
+
 `apt autoremove`: Elimina aquellos paquetes perdidos, generalmente instalados como dependencias de otras instalaciones, que ya no son necesarios.
+
 `apt --purge autoremove`: La opción `--purge` permite otras llamadas de *apt* para borrar también archivos de configuración y demás.
 
 Borrar man: `apt remove --purge man-db`
