@@ -463,22 +463,99 @@ En el apartado d) se ha familiarizado con los services que corren en su sistema.
 todos ellos?. Si identifica servicios no necesarios, proceda adecuadamente. Una limpieza no le
 vendrá mal a su equipo, tanto desde el punto de vista de la seguridad, como del rendimiento.
 
-Se han identificado varios services no necesarios, tanto en el inicio, como en la máquina en sí,
-por sus características de uso por ssh.
-- `systemctl mask avahi-daemon.socket`
-- `systemctl mask avahi-daemon.service`
-- `systemctl disable NetworkManager.service`
-- `systemctl mask cups`: los servicios para la impresión no serán necesarios
-- `systemctl mask cups-browsed.service`
-- `systemctl mask bluetooth`: la máquina virtual no usará bluetooth
-- `systemctl disable accounts-daemon.service`: si es necesario, GNOME lo iniciará
-- `systemctl disable cron.service`: se podrá iniciar después. Por otra parte, `anacron.service` no se salta los eventos programados, aunque la máquina se apague 
+
+- **avahi-daemon**: servicio de *autodiscovery* que no necesitamos en nuestra máquina:
+
+```console
+root@debian:/home/lsi# systemctl disable avahi-daemon.service
+Synchronizing state of avahi-daemon.service with SysV service script with /lib/systemd/systemd-sysv-install.
+Executing: /lib/systemd/systemd-sysv-install disable avahi-daemon
+Removed /etc/systemd/system/sockets.target.wants/avahi-daemon.socket.
+Removed /etc/systemd/system/dbus-org.freedesktop.Avahi.service.
+Removed /etc/systemd/system/multi-user.target.wants/avahi-daemon.service.
+
+root@debian:/home/lsi# systemctl mask avahi-daemon.service
+Created symlink /etc/systemd/system/avahi-daemon.service → /dev/null.
+```
+
+- **accounts-daemon**: API para GNOME con las accounts, innecesario ya que solo utilizamos *ssh*:
+
+```console
+root@debian:/home/lsi# systemctl disable accounts-daemon.service
+Removed /etc/systemd/system/graphical.target.wants/accounts-daemon.service.
+
+root@debian:/home/lsi# systemctl mask accounts-daemon.service
+Created symlink /etc/systemd/system/accounts-daemon.service → /dev/null.
+```
+
+- **NetworkManager**: No necesario porque usamos `networking.service`, este se encarga de gestionar automáticamente si no lo tenemos en `networking`.
+
+```console
+root@debian:/home/lsi# systemctl disable NetworkManager.service
+Removed /etc/systemd/system/dbus-org.freedesktop.nm-dispatcher.service.
+Removed /etc/systemd/system/network-online.target.wants/NetworkManager-wait-online.service.
+Removed /etc/systemd/system/multi-user.target.wants/NetworkManager.service.
+
+root@debian:/home/lsi# systemctl mask NetworkManager.service
+Created symlink /etc/systemd/system/NetworkManager.service → /dev/null.
+```
+
+Más servicios innecesarios:
+
+- `systemctl disable cups && systemctl mask cups`: los servicios para la impresión no serán necesarios.
+
+- `systemctl disable cups-browsed.service && systemctl mask cups-browsed.service`: impresión.
+
+- `systemctl disable ModemManager.service && systemctl mask ModemManager.service`: servicio para gestión de módem.
+
+- `systemctl disable bluetooth && systemctl mask bluetooth`: la máquina no usa bluetooth.
+
+- `systemctl disable switcheroo-control.service && systemctl mask switcheroo-control.service`: servicio para comprobar disponibilidad de dual-GPU (tarjeta gráfica dual).
 
 
 ### Apartado I
 
 Diseñe y configure un pequeño “script” y defina la correspondiente unidad de tipo service para
 que se ejecute en el proceso de botado de su máquina.
+
+- He creado el script `/usr/local/bin/notify` que se conecta con un bot de Telegram:
+
+```bash
+#!/bin/bash
+API_KEY=XXXXXXXXXXXX
+CHAT_ID=XXXXXXXXXXXX
+
+if [ "$1" == "--boot" ]; then MESSAGE="`/bin/date +'%d/%m/%Y %R:%S '`-> Iniciada máquina de Álvaro."; else MESSAGE=$1; fi
+
+MESSAGE=${MESSAGE:-"Vaya, no hay mensaje."}
+
+wget -qO- "https://api.telegram.org/bot$API_KEY/sendMessage?chat_id=$CHAT_ID&text=$MESSAGE" &> /dev/null
+```
+
+- Y un servicio `/etc/systemd/system/notify-boot.service` que me avisa de que la máquina ha sido encendida:
+
+```bash
+[Unit]
+Description=Custom service that notifies through Telegram on startup.
+After=network.target
+
+[Service]
+Type=simple
+Restart=on-failure
+RestartSec=5s
+User=lsi
+ExecStart=notify --boot
+
+[Install]
+WantedBy=multi-user.target
+```
+
+- Para activarlo:
+
+```console
+root@debian:/home/lsi# systemctl enable notify-boot.service
+Created symlink /etc/systemd/system/multi-user.target.wants/notify-boot.service → /etc/systemd/system/notify-boot.service.
+```
 
 ### Apartado J
 
