@@ -882,6 +882,12 @@ restrict 127.0.0.1
 restrict ::1
 ```
 
+- Además, el servidor debe añadir al cliente en su `hosts.allow` para el servicio `ntpd`:
+
+```bash
+ntpd: 10.11.48.50
+```
+
 2. Cliente: Dejamos el fichero `/etc/ntp.conf` así:
 
 ```bash
@@ -919,6 +925,19 @@ restrict ::1
 # Needed for adding pool entries
 restrict source notrap nomodify noquery
 ```
+
+3. Actualizar cambios en `ntp.conf`: `systemctl restart ntp`.
+
+4. Comprobamos:
+
+```console
+root@debian:~# date +%T -s 1
+01:00:00
+root@debian:~# ntpdate 10.11.49.106
+28 Sep 23:43:46 ntpdate[1017]: step time server 10.11.49.106 offset +81815.937779 sec
+```
+
+> Lo que hice aquí fue poner el reloj local del cliente a las `01:00:00` y hacer `ntpdate` a la IP del servidor NTP para sincronizar la hora.
 
 ### Apartado B
 
