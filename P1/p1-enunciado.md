@@ -861,9 +861,9 @@ module(load="imtcp")
 input(type="imtcp" port="514")
 
 # template para guardar los registros de log
-if $fromhost-ip == '10.11.48.50' then { /var/log/alvaro.log
-        stop
-}
+$template remote, "/var/log/rsyslog-server/%fromhost-ip%/%programname%.log"
+*.* ?remote
+& stop
 
 ###########################
 #### GLOBAL DIRECTIVES ####
@@ -906,26 +906,13 @@ rsyslogd: 10.11.48.50
 - Cliente:
 
 ```console
-root@debian:/home/lsi# logger "prueba"
-root@debian:/home/lsi# logger -p mail.err "hola que tal"
-root@debian:/home/lsi# logger "prueba 2"
+
 ```
 
 - Servidor:
 
 ```console
-root@debian:/home/lsi# cat /var/log/alvaro.log 
-2022-09-28T14:36:32+02:00 debian rsyslogd: [origin software="rsyslogd" swVersion="8.2102.0" x-pid="2162" x-info="https://www.rsyslog.com"] exiting on signal 15.
-2022-09-28T14:36:32+02:00 debian systemd[1]: Stopping System Logging Service...
-2022-09-28T14:36:32+02:00 debian systemd[1]: rsyslog.service: Succeeded.
-2022-09-28T14:36:32+02:00 debian systemd[1]: Stopped System Logging Service.
-2022-09-28T14:36:32+02:00 debian systemd[1]: Starting System Logging Service...
-2022-09-28T14:36:32+02:00 debian systemd[1]: Started System Logging Service.
-2022-09-28T14:36:32+02:00 debian rsyslogd: imuxsock: Acquired UNIX socket '/run/systemd/journal/syslog' (fd 3) from systemd.  [v8.2102.0]
-2022-09-28T14:36:32+02:00 debian rsyslogd: [origin software="rsyslogd" swVersion="8.2102.0" x-pid="2172" x-info="https://www.rsyslog.com"] start
-2022-09-28T14:36:50+02:00 debian lsi: prueba
-2022-09-28T14:37:06+02:00 debian lsi: hola que tal
-2022-09-28T14:37:15+02:00 debian lsi: prueba 2
+
 ```
 
 ### Apartado C
