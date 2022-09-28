@@ -839,10 +839,46 @@ En colaboración con otro alumno de prácticas, configure un servidor y un clien
 
 Cruzando los dos equipos anteriores, configure con rsyslog un servidor y un cliente de logs.
 
-1. Servidor:
+> Demostración con `10.11.48.50` como cliente y `10.11.49.106` como servidor.
+
+1. Servidor: El fichero `/etc/rsyslog.conf` debería quedar así:
 
 ```bash
+#################
+#### MODULES ####
+#################
 
+module(load="imuxsock") # provides support for local system logging
+module(load="imklog")   # provides kernel logging support
+#module(load="immark")  # provides --MARK-- message capability
+
+# provides UDP syslog reception
+#module(load="imudp")
+#input(type="imudp" port="514")
+
+# provides TCP syslog reception
+module(load="imtcp")
+input(type="imtcp" port="514")
+
+# template para guardar los registros de log
+if $fromhost-ip == '10.11.48.50' then { /var/log/alvaro.log
+        stop
+}
+
+###########################
+#### GLOBAL DIRECTIVES ####
+###########################
+
+#
+# Servidor sólo aceptará mensajes del compañero
+#
+$AllowedSender TCP 127.0.0.1, 10.11.48.50
+```
+
+- Además, el servidor debe añadir al cliente en su `hosts.allow` para el servicio `rsyslogd`:
+
+```bash
+rsyslogd: 10.11.48.50
 ```
 
 2. Cliente: Añadir lo siguiente al final del fichero `/etc/rsyslog.conf`:
@@ -859,6 +895,34 @@ Cruzando los dos equipos anteriores, configure con rsyslog un servidor y un clie
 )
 ```
 
+3. Actualizar cambios en `rsyslog.conf`: `systemctl restart rsyslog.service`.
+
+4. Probamos:
+
+- Cliente:
+
+```console
+root@debian:/home/lsi# logger "prueba"
+root@debian:/home/lsi# logger -p mail.err "hola que tal"
+root@debian:/home/lsi# logger "prueba 2"
+```
+
+- Servidor:
+
+```console
+root@debian:/home/lsi# cat /var/log/alvaro.log 
+2022-09-28T14:36:32+02:00 debian rsyslogd: [origin software="rsyslogd" swVersion="8.2102.0" x-pid="2162" x-info="https://www.rsyslog.com"] exiting on signal 15.
+2022-09-28T14:36:32+02:00 debian systemd[1]: Stopping System Logging Service...
+2022-09-28T14:36:32+02:00 debian systemd[1]: rsyslog.service: Succeeded.
+2022-09-28T14:36:32+02:00 debian systemd[1]: Stopped System Logging Service.
+2022-09-28T14:36:32+02:00 debian systemd[1]: Starting System Logging Service...
+2022-09-28T14:36:32+02:00 debian systemd[1]: Started System Logging Service.
+2022-09-28T14:36:32+02:00 debian rsyslogd: imuxsock: Acquired UNIX socket '/run/systemd/journal/syslog' (fd 3) from systemd.  [v8.2102.0]
+2022-09-28T14:36:32+02:00 debian rsyslogd: [origin software="rsyslogd" swVersion="8.2102.0" x-pid="2172" x-info="https://www.rsyslog.com"] start
+2022-09-28T14:36:50+02:00 debian lsi: prueba
+2022-09-28T14:37:06+02:00 debian lsi: hola que tal
+2022-09-28T14:37:15+02:00 debian lsi: prueba 2
+```
 
 ### Apartado C
 
