@@ -887,12 +887,16 @@ rsyslogd: 10.11.48.50
 # Cliente:
 
 *.* action(
-       type="omfwd" 
-       target="10.11.49.106" 
-       port="514" 
-       protocol="tcp" 
-       action.resumeRetryCount="-1"
+        type="omfwd"
+        target="10.11.49.106"
+        port="514"
+        protocol="tcp"
+        action.resumeRetryCount="-1"
+        queue.type="LinkedList"
+        queue.filename="/var/log/rsyslog-queue
+        queue.saveOnShutdown="on"
 )
+
 ```
 
 3. Actualizar cambios en `rsyslog.conf`: `systemctl restart rsyslog.service`.
