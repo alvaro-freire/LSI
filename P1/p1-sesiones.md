@@ -301,7 +301,7 @@ añadir: `$Allowed Sender TCP, 127.0.0.1, 10.11.49.106`
 
 - directorio `/etc/rsyslog.conf`
 
-- \*.\* action (type="imfwd"
+- \*.\* action (type="omfwd"
               target="x.x.x.x"
               port="514"
               protocol="tcp"
