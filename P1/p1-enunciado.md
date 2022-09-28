@@ -839,6 +839,27 @@ En colaboración con otro alumno de prácticas, configure un servidor y un clien
 
 Cruzando los dos equipos anteriores, configure con rsyslog un servidor y un cliente de logs.
 
+1. Servidor:
+
+```bash
+
+```
+
+2. Cliente: Añadir lo siguiente al final del fichero `/etc/rsyslog.conf`:
+
+```bash
+# Cliente:
+
+*.* action(
+       type="omfwd" 
+       target="10.11.49.106" 
+       port="514" 
+       protocol="tcp" 
+       action.resumeRetryCount="-1"
+)
+```
+
+
 ### Apartado C
 
 Haga todo tipo de propuestas sobre los siguientes aspectos: ¿Qué problemas de seguridad identifica en los dos apartados anteriores? ¿Cómo podría solucionar los problemas identificados?
