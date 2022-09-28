@@ -278,3 +278,49 @@ el reach se incrementa cada pool segundos (o pull, sabe dios)
 - rsyslog
 
 ## SESIÓN 3
+
+#### servidor rsyslog
+
+- directorio `/etc/rsyslog.conf`
+
+##### servidor: 
+
+descomentar: `$module load imtcp`, `input...`
+
+añadir: `$Allowed Sender TCP, 127.0.0.1, 10.11.49.106`
+
+- `$template remote, "/var/log/%FROMHOST-IP%/%PROGRAMNAME%.log`
+
+- `: ______, isequal, "imtcp" ? remote` <- meterlo encima de todo por si lo hacemos mal, para que no mezcle los logs
+
+- `& stop`
+
+- sysctl -p
+
+#### cliente rsyslog
+
+- directorio `/etc/rsyslog.conf`
+
+- *.* action (type="imfwd"
+              target="x.x.x.x"
+              port="514"
+              protocol="tcp"
+              action.resumeRetryCount="-1")
+
+- sysctl -p
+
+
+#### va a pedir:
+
+- que tiremos abajo el syslog
+
+- hacer logs, por ejemplo: `logger -p mail.err "hola"`
+
+- Deberían quedar en cola
+
+- cuando se levante, se deberían enviar al servidor los logs que estaban en cola
+
+
+
+
+
