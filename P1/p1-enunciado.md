@@ -835,6 +835,91 @@ net.ipv6.conf.lo.disable_ipv6 = 1
 
 En colaboración con otro alumno de prácticas, configure un servidor y un cliente NTP.
 
+> Demostración con `10.11.49.106` como servidor y `10.11.48.150` como cliente.
+
+1. Servidor: El fichero `/etc/ntp.conf` debería quedar así:
+
+```bash
+# /etc/ntp.conf, configuration for ntpd; see ntp.conf(5) for help
+
+driftfile /var/lib/ntp/ntp.drift
+
+# Leap seconds definition provided by tzdata
+leapfile /usr/share/zoneinfo/leap-seconds.list
+
+# Enable this if you want statistics to be logged.
+#statsdir /var/log/ntpstats/
+
+statistics loopstats peerstats clockstats
+filegen loopstats file loopstats type day enable
+filegen peerstats file peerstats type day enable
+filegen clockstats file clockstats type day enable
+
+# Configuración servidor
+127.127.1.0 minpoll 4
+fudge 127.127.1.0 stratum 0
+
+# You do need to talk to an NTP server or two (or three).
+
+# pool.ntp.org maps to about 1000 low-stratum NTP servers.  Your server will
+# pick a different set every time it starts up.  Please consider joining the
+# pool: <http://www.pool.ntp.org/join.html>
+#pool 0.debian.pool.ntp.org iburst
+#pool 1.debian.pool.ntp.org iburst
+#pool 2.debian.pool.ntp.org iburst
+#pool 3.debian.pool.ntp.org iburst
+```
+
+```bash
+# By default, exchange time with everybody, but don't allow configuration.
+#restrict -4 default kod notrap nomodify nopeer noquery limited
+#restrict -6 default kod notrap nomodify nopeer noquery limited
+restrict default ignore
+restrict 10.11.48.50 nomodify nopeer notrap
+
+# Local users may interrogate the ntp server more closely.
+restrict 127.0.0.1
+restrict ::1
+```
+
+2. Cliente: Dejamos el fichero `/etc/ntp.conf` así:
+
+```bash
+# /etc/ntp.conf, configuration for ntpd; see ntp.conf(5) for help
+
+driftfile /var/lib/ntp/ntp.drift
+
+# Leap seconds definition provided by tzdata
+leapfile /usr/share/zoneinfo/leap-seconds.list
+
+# Enable this if you want statistics to be logged.
+#statsdir /var/log/ntpstats/
+
+statistics loopstats peerstats clockstats
+filegen loopstats file loopstats type day enable
+filegen peerstats file peerstats type day enable
+filegen clockstats file clockstats type day enable
+
+### Configuración cliente
+server 10.11.49.106 minpoll 4
+fudge 127.127.1.0 stratum 1
+```
+
+```bash
+# By default, exchange time with everybody, but don't allow configuration.
+#restrict -4 default kod notrap nomodify nopeer noquery limited
+#restrict -6 default kod notrap nomodify nopeer noquery limited
+#restrict default ignore
+#restrict 10.11.49.106 nomodify notrap nopeer
+
+# Local users may interrogate the ntp server more closely.
+restrict 127.0.0.1
+restrict ::1
+
+# Needed for adding pool entries
+restrict source notrap nomodify noquery
+```
+
 ### Apartado B
 
 Cruzando los dos equipos anteriores, configure con rsyslog un servidor y un cliente de logs.
