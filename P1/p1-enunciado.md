@@ -839,7 +839,7 @@ En colaboración con otro alumno de prácticas, configure un servidor y un clien
 
 Cruzando los dos equipos anteriores, configure con rsyslog un servidor y un cliente de logs.
 
-> Demostración con `10.11.48.50` como cliente y `10.11.49.106` como servidor.
+> Demostración con `10.11.48.50` como servidor y `10.11.49.106` como cliente.
 
 1. Servidor: El fichero `/etc/rsyslog.conf` debería quedar así:
 
@@ -872,13 +872,13 @@ $template remote, "/var/log/rsyslog-server/%fromhost-ip%/%programname%.log"
 #
 # Servidor sólo aceptará mensajes del compañero
 #
-$AllowedSender TCP 127.0.0.1, 10.11.48.50
+$AllowedSender TCP 127.0.0.1, 10.11.49.106
 ```
 
 - Además, el servidor debe añadir al cliente en su `hosts.allow` para el servicio `rsyslogd`:
 
 ```bash
-rsyslogd: 10.11.48.50
+rsyslogd: 10.11.49.106
 ```
 
 2. Cliente: Añadir lo siguiente al final del fichero `/etc/rsyslog.conf`:
@@ -892,13 +892,13 @@ rsyslogd: 10.11.48.50
 #$ActionQueueFileName /var/log/rsyslog-queue
 #$ActionQueueSaveOnShutdown on
 #$ActionResumeRetryCount -1
-#*.* @@10.11.49.143:514
+#*.* @@10.11.49.48.50:514
 
 # New Syntax
 
 *.* action(
        type="omfwd" 
-       target="10.11.49.106" 
+       target="10.11.48.50" 
        port="514" 
        protocol="tcp" 
        action.resumeRetryCount="-1"
