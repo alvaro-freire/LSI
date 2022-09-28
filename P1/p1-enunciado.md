@@ -856,7 +856,7 @@ filegen peerstats file peerstats type day enable
 filegen clockstats file clockstats type day enable
 
 # Configuración servidor
-127.127.1.0 minpoll 4
+server 127.127.1.0 minpoll 4
 fudge 127.127.1.0 stratum 0
 
 # You do need to talk to an NTP server or two (or three).
