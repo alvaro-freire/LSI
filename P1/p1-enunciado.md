@@ -789,11 +789,30 @@ lsi@debian:~$
 - Pruebo con mi compañero también:
 
 ```console
-lsi@debian:~$ ping6 2002:a0b:316a::1
+root@debian:/home/lsi# ping6 2002:a0b:316a::1
+PING 2002:a0b:316a::1(2002:a0b:316a::1) 56 data bytes
+64 bytes from 2002:a0b:316a::1: icmp_seq=1 ttl=64 time=0.449 ms
+64 bytes from 2002:a0b:316a::1: icmp_seq=2 ttl=64 time=0.480 ms
+64 bytes from 2002:a0b:316a::1: icmp_seq=3 ttl=64 time=0.386 ms
+64 bytes from 2002:a0b:316a::1: icmp_seq=4 ttl=64 time=0.476 ms
+^C
+--- 2002:a0b:316a::1 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3079ms
+rtt min/avg/max/mdev = 0.386/0.447/0.480/0.037 ms
 ```
 
 ```console
-lsi@debian:~$ ssh lsi@2002:a0b:316a::1
+root@debian:/home/lsi# ssh lsi@2002:a0b:316a::1
+lsi@2002:a0b:316a::1's password: 
+Linux debian 5.10.0-18-amd64 #1 SMP Debian 5.10.140-1 (2022-09-02) x86_64
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Wed Sep 28 11:03:52 2022 from 2002:a0b:3032::1
 ```
 
 - No es necesario en nuestra red interna el uso de IPv6 gracias a nuestra interfaz 6to4.
