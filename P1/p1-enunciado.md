@@ -884,19 +884,28 @@ rsyslogd: 10.11.48.50
 2. Cliente: Añadir lo siguiente al final del fichero `/etc/rsyslog.conf`:
 
 ```bash
-# Cliente:
+# Client:
+
+# Old Syntax (deprecated)
+
+#$ActionQueueType LinkedList
+#$ActionQueueFileName /var/log/rsyslog-queue
+#$ActionQueueSaveOnShutdown on
+#$ActionResumeRetryCount -1
+#*.* @@10.11.49.143:514
+
+# New Syntax
 
 *.* action(
-        type="omfwd"
-        target="10.11.49.106"
-        port="514"
-        protocol="tcp"
-        action.resumeRetryCount="-1"
-        queue.type="LinkedList"
-        queue.filename="/var/log/rsyslog-queue
-        queue.saveOnShutdown="on"
+       type="omfwd" 
+       target="10.11.49.106" 
+       port="514" 
+       protocol="tcp" 
+       action.resumeRetryCount="-1"
+       queue.type="linkedlist"
+       queue.filename="/var/log/rsyslog-queue"
+       queue.saveOnShutdown="on"
 )
-
 ```
 
 3. Actualizar cambios en `rsyslog.conf`: `systemctl restart rsyslog.service`.
@@ -906,13 +915,14 @@ rsyslogd: 10.11.48.50
 - Cliente:
 
 ```console
-
+root@debian:/home/lsi# logger "ESTO ES UNA PRUEBA"
 ```
 
 - Servidor:
 
 ```console
-
+root@debian:~# cat /var/log/rsyslog-server/10.11.49.106/lsi.log 
+2022-09-28T20:49:58+02:00 debian lsi: ESTO ES UNA PRUEBA
 ```
 
 ### Apartado C
