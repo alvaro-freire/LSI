@@ -295,7 +295,7 @@ añadir: `$Allowed Sender TCP, 127.0.0.1, 10.11.49.106`
 
 - `& stop`
 
-- sysctl -p
+- `systemctl restart rsyslog.service`
 
 #### cliente rsyslog
 
@@ -307,7 +307,7 @@ añadir: `$Allowed Sender TCP, 127.0.0.1, 10.11.49.106`
               protocol="tcp"
               action.resumeRetryCount="-1")
 
-- sysctl -p
+- `systemctl restart rsyslog.service`
 
 
 #### va a pedir:
