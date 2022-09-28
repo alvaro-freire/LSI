@@ -1033,6 +1033,17 @@ root@debian:~# cat /var/log/rsyslog-server/10.11.49.106/lsi.log
 
 Haga todo tipo de propuestas sobre los siguientes aspectos: ¿Qué problemas de seguridad identifica en los dos apartados anteriores? ¿Cómo podría solucionar los problemas identificados?
 
+- En `rsyslog` cualquiera podría enviar logs al servidor y llenar el disco. Además, los logs van sin cifrar por la red; cualquiera podría ver o modificar sus contenidos con un ataque MitM (Man in the Middle). También podrían hacer al servidor un \[D\]DOS.
+
+- NTP trabaja sobre UDP; también es posible un \[D\]DOS haciendo IP Spoofing.
+
+- Solución: 
+
+	- Certificados TLS. Con estos certificados entre cliente y servidor podríamos asegurar la autenticidad del cliente y la confidencialidad e integridad de los datos. 
+
+	- Podríamos asegurar la conectividad al puerto mediante *firewall* y mecanismos en capas inferiores.
+
+
 ### Apartado D
 
 En la plataforma de virtualización corren, entre otrs equipos, más de 200 máquinas virtuales para LSI. Como los recursos son limitados, y el disco duro también, identifique todas aquellas acciones que pueda hacer para reducir el espacio de disco ocupado.
