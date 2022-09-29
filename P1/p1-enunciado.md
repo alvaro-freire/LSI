@@ -1028,6 +1028,18 @@ root@debian:/home/lsi# logger "ESTO ES UNA PRUEBA"
 root@debian:~# cat /var/log/rsyslog-server/10.11.49.106/lsi.log 
 2022-09-28T20:49:58+02:00 debian lsi: ESTO ES UNA PRUEBA
 ```
+5. Probando la cola:
+	1. En el servidor, abrir el archivo `/etc/rsyslog.conf` y comentar la siguiente línea, para que deje de escucharse en el puerto 514/tcp:
+	```bash
+	# provides TCP syslog reception
+	module(load="imtcp")
+	# input(type="imtcp" port="514")
+	```
+	2. Tras esto, ejecutar `systemctl restart rsyslog`.
+	3. En el cliente, mandar un log al servidor. Por ejemplo, `logger "Hola, estás ahí?"`. Con esto, el cliente intentará enviarlo, pero al tener cortada la conexión deberá encolarlo.
+	4. Comprobar que no se ha guardado el nuevo mensaje de log generado por el cliente desconectado `tail /var/log/rsyslog/10.11.49.106/lsi.log`
+	5. Descomentar la línea comentada en el paso `1.` y volver a ejecutar el paso `2.`.
+	6. Tras unos segundos, volver a hacer `tail /var/log/rsyslog/10.11.49.106/lsi.log` para comprobar que los mensajes se han procesado y almacenado.
 
 ### Apartado C
 
