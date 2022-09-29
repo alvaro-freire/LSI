@@ -835,7 +835,7 @@ net.ipv6.conf.lo.disable_ipv6 = 1
 
 En colaboración con otro alumno de prácticas, configure un servidor y un cliente NTP.
 
-> Demostración con `10.11.49.106` como servidor y `10.11.48.150` como cliente.
+> Demostración con `10.11.49.106` como servidor y `10.11.48.50` como cliente.
 
 1. Servidor: El fichero `/etc/ntp.conf` debería quedar así:
 
