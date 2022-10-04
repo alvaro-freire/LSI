@@ -764,7 +764,7 @@ rtt min/avg/max/mdev = 0.058/0.059/0.061/0.001 ms
 - Añadimos a `/etc/hosts.allow`:
 
 ```bash
-shd: [2002:a0b:3032::1]/48, [2002:a0b:316a::1]/48
+sshd: [2002:a0b:3032::1]/48, [2002:a0b:316a::1]/48
 ```
 
 > IP propia (ens33) + compañero (ens33 también).
