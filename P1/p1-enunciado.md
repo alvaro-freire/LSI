@@ -882,12 +882,6 @@ restrict 127.0.0.1
 restrict ::1
 ```
 
-- Además, el servidor debe añadir al cliente en su `hosts.allow` para el servicio `ntpd`:
-
-```bash
-ntpd: 10.11.48.50
-```
-
 2. Cliente: Dejamos el fichero `/etc/ntp.conf` así:
 
 ```bash
@@ -977,12 +971,6 @@ $template remote, "/var/log/rsyslog-server/%fromhost-ip%/%programname%.log"
 # Servidor sólo aceptará mensajes del compañero
 #
 $AllowedSender TCP 127.0.0.1, 10.11.49.106
-```
-
-- Además, el servidor debe añadir al cliente en su `hosts.allow` para el servicio `rsyslogd`:
-
-```bash
-rsyslogd: 10.11.49.106
 ```
 
 2. Cliente: Añadir lo siguiente al final del fichero `/etc/rsyslog.conf`:
