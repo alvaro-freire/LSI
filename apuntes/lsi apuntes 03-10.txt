@@ -1,3 +1,0 @@
-habló de tema auth, firewalls, mmap, traceroutes
-
-herramienta creepy python metadatos
