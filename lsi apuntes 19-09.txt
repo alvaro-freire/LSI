@@ -1,0 +1,19 @@
+categorias de ataques
+
+generacion o fabricacion
+ataque contra la autenticidad
+e.g. transacciones falsas en red
+hping3, scapy, packet
+
+information gathering
+trilogia -> host discovery, port scanning, fingerprinting
+
+footprinting/pasivo, huella que deja la información pública de las empresas
+google hacking, google dorks
+
+maltego
+metglub
+entidades para buscar por la red mediante transformadas
+
+OSINT (Open Source Intelligence)
+osintframework.com

@@ -1,0 +1,32 @@
+pivoting -> utilizar otras máquinas para ataques
+
+singie
+stagers
+stages
+
+¡ meterpreter !
+
+bbdd exploits
+
+ingeniería social -> set 
+
+
+nikto, zap, w3af
+
+waf - web application firewall -> capa 7
+analiza todo el tráfico contra las apps web y corta tráfico no deseado
+
+¡ modsecurity !
+
+ (ejemplo bancos y cuentas bancarias)
+
+pivoting/ocultación -> pivotar máquinas, ocultar de antivirus
+
+ofuscación
+
+msfpayload
+
+handshake (Ack, fin... de conexiones tcp)
+
+firewall de control de estado -> controla q las conexioens q se abren a través del firewall
+sigan el handshake correcto

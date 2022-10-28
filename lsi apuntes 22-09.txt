@@ -1,0 +1,31 @@
+DNS
+
+primarios
+secundarios
+A PTR
+AAAA
+NS
+MX
+
+
+dnsenum usc.es
+
+
+
+nslookup dig
+> server x.x.x.x
+> set q= NS
+
+> ls udc.es
+
+cache snooping
+
+dnsrecon -t snoop x.y.y DNS -D <fichero>
+
+DMZ
+
+SHODAN
+
+
+4) port scanning
+una vez tienes info, escaneas sigilosamente algún puerto de una máquina (no a lo bestia)
