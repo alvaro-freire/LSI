@@ -2281,11 +2281,10 @@ Nmap done: 1 IP address (1 host up) scanned in 21.70 seconds
 - ¿Qué gestor de contenidos se utiliza en www.usc.es?
 
 ```bash
-root@debian:/home/lsi# apt install whatweb
-...
-root@debian:/home/lsi# whatweb udc.es
-http://udc.es [302 Found] Country[SPAIN][ES], IP[193.144.53.84], RedirectLocation[https://www.udc.es/]
-https://www.udc.es/ [200 OK] Country[SPAIN][ES], Email[info@udc.gal], HTML5, HTTPServer[OpenCms/10.5.4], IP[193.144.53.84], JQuery, Modernizr[2.8.3.min], OpenCms[10.5.4], Script[text/javascript], Strict-Transport-Security[max-age=31536000; includeSubDomains; preload], Title[Universidade da Coruña], X-UA-Compatible[IE=edge]
+root@debian:/home/lsi# whatweb www.usc.es
+http://www.usc.es [301 Moved Permanently] Apache[2.4.41], Country[UNITED STATES][US], HTTPServer[Ubuntu Linux][Apache/2.4.41 (Ubuntu)], IP[52.157.220.132], RedirectLocation[https://www.usc.gal/], Title[301 Moved Permanently]
+https://www.usc.gal/ [301 Moved Permanently] Apache, Content-Language[gl], Country[UNITED STATES][US], HTML5, HTTPServer[Apache], IP[52.157.220.132], Meta-Refresh-Redirect[https://www.usc.gal/gl], RedirectLocation[https://www.usc.gal/gl], Strict-Transport-Security[max-age=31536000; includeSubDomains; preload], Title[Redirecting to https://www.usc.gal/gl], UncommonHeaders[x-drupal-route-normalizer,x-content-type-options,permissions-policy], X-Frame-Options[SAMEORIGIN], X-UA-Compatible[IE=edge], X-XSS-Protection[1; mode=block]
+https://www.usc.gal/gl [200 OK] Apache, Content-Language[gl], Country[UNITED STATES][US], HTML5, HTTPServer[Apache], IP[52.157.220.132], MetaGenerator[Drupal 9 (https://www.drupal.org)], Script[application/json], Strict-Transport-Security[max-age=31536000; includeSubDomains; preload], Title[Inicio | Universidade de Santiago de Compostela], UncommonHeaders[x-content-type-options,permissions-policy,link,x-dns-prefetch-control], X-Frame-Options[SAMEORIGIN], X-UA-Compatible[IE=edge], X-XSS-Protection[1; mode=block]
 ```
 
 OpenCMS\[10.5.4]
