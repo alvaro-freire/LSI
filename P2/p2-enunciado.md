@@ -16,6 +16,8 @@ apt install ettercap-text-only
 
 Capture paquetería variada de su compañero de prácticas que incluya varias sesiones HTTP. Sobre esta paquetería  (puede utilizar el wireshark para los siguientes subapartados).
 
+1. Hacemos un MITM a la máquina de nuestro compañero:
+
 ```bash
 root@debian:/home/lsi/ossec-hids-3.7.0# ettercap -T -q -i ens33 -M arp:remote //10.11.49.106/ //10.11.48.1/
 
@@ -55,6 +57,27 @@ Text only Interface activated...
 Hit 'h' for inline help
 ```
 
+2. En otra terminal, hacemos un tcpdump para guardar el tráfico capturado en un fichero `compa.pcap`:
+
+```bash
+root@debian:/home/lsi# tcpdump -i ens33 -s 65535 -w compa.pcap
+tcpdump: listening on ens33, link-type EN10MB (Ethernet), snapshot length 65535 bytes
+^C1250 packets captured
+1254 packets received by filter
+0 packets dropped by kernel
+```
+
+3. Desde nuestra máquina local, hacemos un `scp` para obtener el fichero `compa.pcap`:
+
+```zsh
+╭─alvarofreire at alvaro-msi in ~ 22-11-03 - 12:44:17
+╰─○ scp lsi@10.11.48.50:/home/lsi/compa.pcap .
+lsi@10.11.48.50's password: 
+compa.pcap                                    100%  748KB 401.7KB/s   00:01
+```
+
+4. Ejecutamos Wireshark y abrimos el archivo `compa.pcap` para comenzar a analizar.
+
 - Identifique los campos de cabecera de un paquete TCP.
 
 Copiado del wireshark:
@@ -89,7 +112,6 @@ Hypertext Transfer Protocol
 
 ```
 
-
 - Filtre la captura para obtener el tráfico HTTP.
 
 Escribo "http" en la barra de filtrado:
@@ -113,6 +135,8 @@ Escribo "http" en la barra de filtrado:
 ```
 
 - Visualice la paquetería TCP de una determinada sesión.
+
+Analyze > Follow > TCP Stream
 
 ```
 GET /documentos/internet_tegn.htm HTTP/1.1
@@ -143,6 +167,8 @@ Content-Type: text/html
 
 - Sobre el total de la paquetería obtenga estadísticas del tráfico por protocolo como fuente de información para un análisis básico sobre el tráfico.
 
+Statistics > Protocol Hierarchy
+
 ```csv
 "Protocol", "Percent Packets", "Packets", "Percent Bytes", "Bytes", "Bits/s", "End Packets", "End Bytes", "End Bits/s"
 "Frame",     100,               158,       100,             130960,  4.237k,   0,             0,           0
@@ -156,8 +182,11 @@ Content-Type: text/html
 
 - Obtenga información del tráfico de las distintas "conversaciones" mantenidas.
 
+Statistics > Conversations
+
 - Obtenga direcciones finales del tráfico de los distintos protocolos como mecanismo para determinar qué circula por nuestras redes.
 
+Statistics > Endpoints
 
 ### Apartado C
 
