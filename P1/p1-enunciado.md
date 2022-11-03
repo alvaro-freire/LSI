@@ -958,11 +958,6 @@ module(load="imklog")   # provides kernel logging support
 module(load="imtcp")
 input(type="imtcp" port="514")
 
-# template para guardar los registros de log
-$template remote, "/var/log/rsyslog-server/%fromhost-ip%/%programname%.log"
-*.* ?remote
-& stop
-
 ###########################
 #### GLOBAL DIRECTIVES ####
 ###########################
@@ -971,6 +966,13 @@ $template remote, "/var/log/rsyslog-server/%fromhost-ip%/%programname%.log"
 # Servidor sólo aceptará mensajes del compañero
 #
 $AllowedSender TCP 127.0.0.1, 10.11.49.106
+
+...
+
+# template para guardar los registros de log
+$template remote, "/var/log/rsyslog-server/%fromhost-ip%/%programname%.log"
+*.* ?remote
+& stop
 ```
 
 2. Cliente: Añadir lo siguiente al final del fichero `/etc/rsyslog.conf`:
