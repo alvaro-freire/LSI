@@ -17,7 +17,7 @@ apt install ettercap-text-only
 Capture paquetería variada de su compañero de prácticas que incluya varias sesiones HTTP. Sobre esta paquetería  (puede utilizar el wireshark para los siguientes subapartados).
 
 ```bash
-root@debian:/home/lsi# ettercap -T -q -i ens33 -M arp:remote //10.11.49.146/ //10.11.48.1/ -w ficherito
+root@debian:/home/lsi/ossec-hids-3.7.0# ettercap -T -q -i ens33 -M arp:remote //10.11.49.106/ //10.11.48.1/
 
 ettercap 0.8.3.1 copyright 2001-2020 Ettercap Development Team
 
@@ -45,7 +45,7 @@ Scanning for merged targets (2 hosts)...
 
 ARP poisoning victims:
 
- GROUP 1 : 10.11.49.146 00:50:56:97:DE:D1
+ GROUP 1 : 10.11.49.106 00:50:56:97:24:D0
 
  GROUP 2 : 10.11.48.1 DC:08:56:10:84:B9
 Starting Unified sniffing...
@@ -57,13 +57,102 @@ Hit 'h' for inline help
 
 - Identifique los campos de cabecera de un paquete TCP.
 
+Copiado del wireshark:
+
+```
+Frame 59: 165 bytes on wire (1320 bits), 165 bytes captured (1320 bits)
+Ethernet II, Src: VMware_97:24:d0 (00:50:56:97:24:d0), Dst: VMware_97:d5:d9 (00:50:56:97:d5:d9)
+Internet Protocol Version 4, Src: 10.11.49.106, Dst: 188.164.193.158
+Transmission Control Protocol, Src Port: 49006, Dst Port: 80, Seq: 1, Ack: 1, Len: 111
+    Source Port: 49006
+    Destination Port: 80
+    [Stream index: 5]
+    [Conversation completeness: Complete, WITH_DATA (31)]
+    [TCP Segment Len: 111]
+    Sequence Number: 1    (relative sequence number)
+    Sequence Number (raw): 275151347
+    [Next Sequence Number: 112    (relative sequence number)]
+    Acknowledgment Number: 1    (relative ack number)
+    Acknowledgment number (raw): 4018007217
+    0101 .... = Header Length: 20 bytes (5)
+    Flags: 0x018 (PSH, ACK)
+    Window: 502
+    [Calculated window size: 64256]
+    [Window size scaling factor: 128]
+    Checksum: 0x8766 [unverified]
+    [Checksum Status: Unverified]
+    Urgent Pointer: 0
+    [Timestamps]
+    [SEQ/ACK analysis]
+    TCP payload (111 bytes)
+Hypertext Transfer Protocol
+
+```
+
+
 - Filtre la captura para obtener el tráfico HTTP.
+
+Escribo "http" en la barra de filtrado:
+
+```
+59	21.912751	10.11.49.106	188.164.193.158	HTTP	165	GET /documentos/internet_tegn.htm HTTP/1.1 
+197	22.051898	188.164.193.158	10.11.49.106	HTTP	1163	HTTP/1.1 200 OK  (text/html)
+383	22.698617	10.11.49.72	10.11.48.50	HTTP	84	GET / HTTP/1.0 
+399	22.795106	10.11.48.50	10.11.49.72	HTTP	992	HTTP/1.1 200 OK  (text/html)
+665	32.672654	193.147.147.81	10.11.49.106	HTTP	547	HTTP/1.1 200 OK  (text/html)
+899	49.056718	10.11.49.106	188.164.193.158	HTTP	165	GET /documentos/internet_tegn.htm HTTP/1.1 
+1047	49.192641	188.164.193.158	10.11.49.106	HTTP	1163	HTTP/1.1 200 OK  (text/html)
+```
 
 - Obtenga los distintos "objetos" del tráfico HTTP (imágenes, pdfs, etc.)
 
+```
+59	21.912751	10.11.49.106	188.164.193.158	HTTP	165	GET /documentos/internet_tegn.htm HTTP/1.1 
+383	22.698617	10.11.49.72	10.11.48.50	HTTP	84	GET / HTTP/1.0 
+899	49.056718	10.11.49.106	188.164.193.158	HTTP	165	GET /documentos/internet_tegn.htm HTTP/1.1 
+```
+
 - Visualice la paquetería TCP de una determinada sesión.
 
+```
+GET /documentos/internet_tegn.htm HTTP/1.1
+Host: www.hipertexto.info
+User-Agent: curl/7.74.0
+Accept: */*
+
+HTTP/1.1 200 OK
+Date: Thu, 03 Nov 2022 11:43:52 GMT
+Server: Apache
+Last-Modified: Sun, 29 Jul 2018 14:08:54 GMT
+ETag: "71667c-ed1b-57223e297ba09"
+Accept-Ranges: bytes
+Content-Length: 60699
+Vary: Accept-Encoding
+X-Powered-By: PleskLin
+Content-Type: text/html
+
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">
+
+<head>
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:Categories
+
+...
+```
+
 - Sobre el total de la paquetería obtenga estadísticas del tráfico por protocolo como fuente de información para un análisis básico sobre el tráfico.
+
+```csv
+"Protocol", "Percent Packets", "Packets", "Percent Bytes", "Bytes", "Bits/s", "End Packets", "End Bytes", "End Bits/s"
+"Frame",     100,               158,       100,             130960,  4.237k,   0,             0,           0
+"Ethernet",  100,               158,       1.7,             2212,    71k,      0,             0,           0
+"IPv4",      100,               158,       2.4,             3160,    102k,     0,             0,           0
+"TCP",       100,               158,       95.7,            125384,  4.056k,   147,           110804,      3.585k
+"Malformed Packet",     5.7,    9,         0,               0,       0,        9,             0,           0
+"HTTP",      1.3,               2,         46.6,            61080,   1.976k,   1,             111,         3.591k
+"Line-based text data", 0.6,    1,         46.3,            60699,   1.964k,   1,             60969,       1.972k
+```
 
 - Obtenga información del tráfico de las distintas "conversaciones" mantenidas.
 
@@ -1879,7 +1968,23 @@ ACCOUNT FOUND: [ssh] Host: 10.11.49.106 User: lsi Password: XXXXXXXXX [SUCCESS]
 
 Reportar alarmas está muy bien, pero no estaría mejor un sistema activo, en lugar de uno pasivo. Configure algún sistema activo, por ejemplo OSSEC, y pruebe su funcionamiento ante un “password guessing”.
 
-Instalar [OSSEC](https://www.ossec.net/docs/docs/manual/installation/installation-requirements.html)
+Instalar [OSSEC](https://www.ossec.net/docs/docs/manual/installation/installation-requirements.html):
+
+```bash
+root@debian:/home/lsi# apt -y install  wget git vim unzip make gcc build-essential php php-cli php-common libapache2-mod-php apache2-utils inotify-tools libpcre2-dev zlib1g-dev  libz-dev libssl-dev libevent-dev build-essential libsystemd-dev
+
+root@debian:/home/lsi# wget https://github.com/ossec/ossec-hids/archive/refs/tags/3.7.0.zip
+
+root@debian:/home/lsi# mv 3.7.0.zip  ossec-hids-3.7.0.zip
+
+root@debian:/home/lsi# unzip ossec-hids-3.7.0.zip
+
+root@debian:/home/lsi# cd ossec-hids-3.7.0
+
+root@debian:/home/lsi/ossec-hids-3.7.0# ./install.sh
+
+root@debian:/home/lsi/ossec-hids-3.7.0# /var/ossec/bin/ossec-control start
+```
 
 Unban:
 
