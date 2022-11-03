@@ -2343,18 +2343,40 @@ root@debian:/home/lsi# unzip ossec-hids-3.7.0.zip
 root@debian:/home/lsi# cd ossec-hids-3.7.0
 
 root@debian:/home/lsi/ossec-hids-3.7.0# ./install.sh
+```
 
+Iniciamos el OSSEC
+
+```bash
 root@debian:/home/lsi/ossec-hids-3.7.0# /var/ossec/bin/ossec-control start
 ```
 
-Unban:
+Iniciamos ataque de password guessing desde la máquina del compañero:
 
 ```bash
-/var/ossec/active-response/bin/host-deny.sh delete - <ip>
-/var/ossec/active-response/bin/firewall-drop.sh delete - <ip>
+root@debian:/home/lsi# medusa -h 10.11.48.50 -u lsi -P 10k-most-common.txt -M ssh
+Medusa v2.2 [http://www.foofus.net] (C) JoMo-Kun / Foofus Networks <jmk@foofus.net>
+
+ACCOUNT CHECK: [ssh] Host: 10.11.48.50 (1 of 1, 0 complete) User: lsi (1 of 1, 0 complete) Password: password (1 of 10001 complete)
+ACCOUNT CHECK: [ssh] Host: 10.11.48.50 (1 of 1, 0 complete) User: lsi (1 of 1, 0 complete) Password: 123456 (2 of 10001 complete)
+ACCOUNT CHECK: [ssh] Host: 10.11.48.50 (1 of 1, 0 complete) User: lsi (1 of 1, 0 complete) Password: 12345678 (3 of 10001 complete)
+ACCOUNT CHECK: [ssh] Host: 10.11.48.50 (1 of 1, 0 complete) User: lsi (1 of 1, 0 complete) Password: 1234 (4 of 10001 complete)
+
+^CALERT: Medusa received SIGINT - Sending notification to login threads that we are are aborting.
+
+root@debian:/home/lsi# ssh lsi@10.11.48.50
+
+^C
 ```
 
-Check logs:
+Vemos que tras los primeros intentos, ya no permite más, ni tampoco conectar por ssh, así que lo desbaneamos:
+
+```bash
+/var/ossec/active-response/bin/host-deny.sh delete - 10.11.49.106
+/var/ossec/active-response/bin/firewall-drop.sh delete - 10.11.49.106
+```
+
+Para comprobar logs:
 
 ```bash
 tail /var/ossec/logs/ossec.log
@@ -2368,5 +2390,117 @@ Supongamos que una máquina ha sido comprometida y disponemos de un fichero con 
 [ossec-logtest](https://www.ossec.net/docs/docs/programs/ossec-logtest.html#example-2-using-ossec-for-the-forensic-analysis-of-log-files)
 
 ```bash
+root@debian:/home/lsi# cat /var/log/auth.log | /var/ossec/bin/ossec-logtest -a
+2022/11/03 23:36:31 ossec-testrule: INFO: Reading local decoder file.
+2022/11/03 23:36:31 ossec-testrule: INFO: Started (pid: 3236).
 
+** Alert 1667514991.149: mail  - syslog,sshd,authentication_failed,
+2022 Nov 03 23:36:31 debian->stdin
+Rule: 5758 (level 8) -> 'Maximum authentication attempts exceeded.'
+Src IP: 10.11.49.106
+Src Port: 41178
+User: lsi
+Nov  3 23:25:41 debian sshd[3085]: error: maximum authentication attempts exceeded for lsi from 10.11.49.106 port 41178 ssh2 [preauth]
+
+** Alert 1667514991.150: - syslog,access_control,authentication_failed,
+2022 Nov 03 23:36:31 debian->stdin
+Rule: 2501 (level 5) -> 'User authentication failure.'
+Nov  3 23:25:41 debian sshd[3085]: Disconnecting authenticating user lsi 10.11.49.106 port 41178: Too many authentication failures [preauth]
+
+** Alert 1667514991.151: mail  - syslog,access_control,authentication_failed,
+2022 Nov 03 23:36:31 debian->stdin
+Rule: 2502 (level 10) -> 'User missed the password more than one time'
+Src IP: 10.11.49.106
+User: lsi
+Nov  3 23:25:41 debian sshd[3085]: PAM 2 more authentication failures; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.11.49.106  user=lsi
+
+** Alert 1667514991.152: - pam,syslog,authentication_failed,
+2022 Nov 03 23:36:31 debian->stdin
+Rule: 5503 (level 5) -> 'User login failed.'
+Src IP: 10.11.49.106
+User: lsi
+Nov  3 23:25:41 debian sshd[3089]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.11.49.106  user=lsi
+
+** Alert 1667514991.153: - syslog,sshd,authentication_failed,
+2022 Nov 03 23:36:31 debian->stdin
+Rule: 5716 (level 5) -> 'SSHD authentication failed.'
+Src IP: 10.11.49.106
+User: lsi
+Nov  3 23:25:43 debian sshd[3089]: Failed password for lsi from 10.11.49.106 port 38270 ssh2
+```
+
+```bash
+root@debian:/home/lsi# cat /var/log/auth.log | /var/ossec/bin/ossec-logtest -a |/var/ossec/bin/ossec-reportd
+2022/11/03 23:38:24 ossec-reportd: INFO: Started (pid: 3242).
+2022/11/03 23:38:24 ossec-testrule: INFO: Reading local decoder file.
+2022/11/03 23:38:24 ossec-testrule: INFO: Started (pid: 3241).
+2022/11/03 23:38:29 ossec-reportd: INFO: Report completed. Creating output...
+ 
+Report completed. ==
+------------------------------------------------
+->Processed alerts: 153
+->Post-filtering alerts: 153
+->First alert: 2022 Nov 03 23:38:24
+->Last alert: 2022 Nov 03 23:38:24
+ 
+ 
+Top entries for 'Source ip':
+------------------------------------------------
+10.11.48.68                                                                   |35      |
+10.11.49.75                                                                   |35      |
+10.30.10.165                                                                  |11      |
+10.11.49.106                                                                  |10      |
+10.30.11.80                                                                   |4       |
+ 
+ 
+Top entries for 'Username':
+------------------------------------------------
+lsi                                                                           |25      |
+ 
+ 
+Top entries for 'Level':
+------------------------------------------------
+Severity 5                                                                    |79      |
+Severity 3                                                                    |59      |
+Severity 8                                                                    |7       |
+Severity 2                                                                    |6       |
+Severity 10                                                                   |1       |
+Severity 4                                                                    |1       |
+ 
+ 
+Top entries for 'Group':
+------------------------------------------------
+syslog                                                                        |153     |
+access_control                                                                |72      |
+access_denied                                                                 |70      |
+pam                                                                           |48      |
+authentication_success                                                        |40      |
+sshd                                                                          |24      |
+authentication_failed                                                         |11      |
+errors                                                                        |6       |
+adduser                                                                       |2       |
+fts                                                                           |1       |
+ 
+ 
+Top entries for 'Location':
+------------------------------------------------
+debian->stdin                                                                 |153     |
+ 
+ 
+Top entries for 'Rule':
+------------------------------------------------
+2503 - Connection blocked by Tcp Wrappers.                                    |70      |
+5501 - Login session opened.                                                  |25      |
+5502 - Login session closed.                                                  |20      |
+5715 - SSHD authentication success.                                           |14      |
+1002 - Unknown problem somewhere in the system.                               |6       |
+5716 - SSHD authentication failed.                                            |5       |
+5701 - Possible attack on the ssh server (or version gathering).              |4       |
+5503 - User login failed.                                                     |3       |
+10100 - First time user logged in.                                            |1       |
+2501 - User authentication failure.                                           |1       |
+2502 - User missed the password more than one time                            |1       |
+5758 - Maximum authentication attempts exceeded.                              |1       |
+5901 - New group added to the system                                          |1       |
+5902 - New user added to the system                                           |1       |
 ```
