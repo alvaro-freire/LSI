@@ -1366,29 +1366,17 @@ root@debian:/home/lsi# cat /etc/arpon.conf
 #
 # See the arpon(8) man page for details.
 #
-
 #
-# Static entries matching the eth0 network interface:
+# Static entries matching the ens33 network interface:
 #
-# First static entry:
-#192.168.1.1     58:ac:78:10:b9:77
-# Second static entry:
-#192.168.1.3     d4:be:d9:fe:8b:45
-# Third static entry:
-#192.168.1.4     90:94:e4:bb:1c:10
-
-#
-# Static entries matching the eth1 network interface:
-#
-# First static entry:
-#10.0.1.1        58:ac:78:88:1a:bb
-# Second static entry:
-#10.0.10.1       90:94:e4:7e:f4:59
+10.11.48.1	dc:08:56:10:84:b9
+10.11.49.106	00:50:56:97:24:d0
 root@debian:/home/lsi# arpon -d -i ens33 -H
-root@debian:/home/lsi# Nov 03 14:32:19 [INFO] Background process is running (2022).
-ps -A | grep arpon
-   2022 ?        00:00:00 arpon
-root@debian:/home/lsi# kill 2022
+root@debian:/home/lsi# Nov 03 16:44:03 [INFO] Background process is running (3514).
+
+root@debian:/home/lsi# ps -A | grep arpon
+   3514 ?        00:00:00 arpon
+root@debian:/home/lsi# kill 3514
 ```
 
 ### Apartado J
