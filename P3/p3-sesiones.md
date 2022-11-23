@@ -128,3 +128,140 @@ common name: web (lo que se está certificando)
 # activar ssl en apache para activar el puerto 443 y tener https
 
 # usuario-passwd en https: nos perdona este apartado también
+
+
+# newcert.pem y newkey.pem para server ssl
+
+# cacert.pem y private/cakey.pem para repositorio navegación y verificación de firma
+
+# a2enmod ssl
+
+/etc/apache2/ports.conf
+
+`
+Listen 80
+  "    443
+`
+
+
+/etc/apache2/sites-available/ (default o ssl)
+
+ssl:
+
+# Control de acceso por ip a mi web
+
+<Directory "/var/www/webssl">
+
+Order allow, deny (primero se evalúa allow y luego deny, podemos cambiar el orden)
+allow ip, red, etc
+deny all
+
+</Directory>
+
+configuracion:
+
+SSLEngine On (levanta el motor de SSL para q funcione https)
+SSLCertificateFile /etc/apache2/ssl/certificate.pem
+SSLCertificateKeyFile /PATH_A_LA_CLAVE_PRIVADA/
+
+--> systemctl restart apache2 para actualizar cambios
+
+# insertar cacert.pem en el navegador
+
+copiar cacert.pem en /usr/local/share/ca-certificates/
+#update-ca-certificates
+
+# montar vpn punto a punto:
+
+server:
+- apt install openssl
+- apt install openvpn
+- lsmod | grep tun
+- modprobe tun
+- echo tun >> /etc/modules
+- cd /etc/openvpn
+- openvpn --genkey --secret clave.key
+- nano tunel.conf
+
+local mi ip
+remote la de mi compa
+dev tun1
+port 5555
+comp-lzo
+user nobody
+ping 15 
+ifconfig 172.160.0.1 172.160.0.2
+secret /etc/openvpn/clave.key
+# reboot
+
+cliente:
+lo mismo pero en lugar de generar la clave, la copiamos de la máquina del servidor
+
+/etc/openvpn/tunel.conf:
+igual, pero local y remote al revés
+y lo mismo con ifconfig (al revés el orden)
+
+#openvpn --verb 5 /etc/openvpn/tunel.conf
+#ifconfig -a
+
+# fw de control de estados tanto en tcp como en udp
+# las reglas son distintas para cliente que para server
+# dos metodos: 
+#            - input output established ...
+#            - raca raca raca raca
+# 
+# preguntará sobre las reglas, saber cómo se hizo todo y pedirá ejecutar el script
+
+
+# instala y configura el splunk
+# es un SIEM
+multiuser.target
+gnome
+libreoffice
+apt autoremove
+df -H/-k
+/var/log/ .numero 
+
+descargar el .deb que pasó nino por teams (el que queramos)
+
+apt install ficherito.deb
+
+/opt/splunk/bin/splunk enable boot-start
+
+systemctl start splunk.service
+
+# desde nuestro portátil: http://10.11.48.50:8000
+
+
+index= _internal <- para mostrar los logs de splunk, lanzará un error por espacio insuficiente
+
+/opt/splunk
+
+MinFreeSpace 5000 <- lo cambiamos a 500
+
+add data > monitor > files and data
+cargar /var/log/syslog, /var/log/apache2/access.log
+#ejemplo query:
+source="/var/log/syslog"
+host="debian" source="/var/syslog"
+source="access.log"
+source="access.log" date_month="december" date_mday=3
+
+
+
+
+# montar nexus 10.3.0
+
+https://www.tenable.com/tenable-for-education/nessus-essentials
+
+comprobar espacio en disco
+
+apt install nessus.deb
+
+systemctl restart nessus-deb.service
+
+https://ip:8834
+
+con usuario y password
+
+1 hora aprox
