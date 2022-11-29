@@ -98,7 +98,7 @@ The key's randomart image is:
 
 compa desde ~/.ssh:
 ```
-root@debian:/home/lsi/.ssh# scp lsi@10.11.48.50:/home/lsi/.ssh/*.pub .
+root@debian:/home/lsi/.ssh# scp lsi@10.11.48.50:/home/lsi/.ssh/*.pub ../keys
 root@debian:/home/lsi/.ssh# touch authorized_keys
 root@debian:/home/lsi/.ssh# cat ../keys/id_rsa.pub >> authorized_keys 
 root@debian:/home/lsi/.ssh# cat ../keys/id_ed25519.pub >> authorized_keys 
