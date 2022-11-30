@@ -338,20 +338,77 @@ SSLCertificateFile      /etc/apache2/ssl/alvaro/newcert.pem
 SSLCertificateKeyFile /etc/apache2/ssl/alvaro/newkey.pem
 ```
 
-```
-#   Certificate Authority (CA):
-#   Set the CA certificate verification path where to find CA
-#   certificates for client authentication or alternatively one
-#   huge file containing all of them (file must be PEM encoded)
-#   Note: Inside SSLCACertificatePath you need hash symlinks
-#                to point to the certificate files. Use the pro>
-#                Makefile to update the hash symlinks after cha>
-#SSLCACertificatePath /etc/ssl/certs/
-SSLCACertificateFile /etc/apache2/ssl/alvaro/cacert.pem
-```
-
 Actualizamos apache:
 
 ```bash
 root@debian:/etc/apache2/sites-available# systemctl restart apache2
 ```
+
+Comprobamos desde nuestro máquina personal, con el cacert.pem copiado:
+
+```zsh
+╭─alvarofreire at alvaro-msi in ~/cert 22-11-30 - 19:50:35
+╰─○ curl --cacert cacert.pem https://10.11.48.50
+curl: (60) SSL: certificate subject name 'alvaro' does not match target host name '10.11.48.50'
+More details here: https://curl.se/docs/sslcerts.html
+
+curl failed to verify the legitimacy of the server and therefore could not
+establish a secure connection to it. To learn more about this situation and
+how to fix it, please visit the web page mentioned above.
+╭─alvarofreire at alvaro-msi in ~/cert 22-11-30 - 19:50:45
+╰─○ curl --cacert cacert.pem https://alvaro     
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>Álvaro Freire — Software Developer</title>
+...
+...
+```
+
+### Apartado 3
+
+Cliente VPN:
+
+```
+root@debian:/home/lsi# lsmod | grep tun
+tunnel4                16384  1 sit
+ip_tunnel              32768  1 sit
+root@debian:/home/lsi# modprobe tun
+root@debian:/home/lsi# echo tun >> /etc/modules
+root@debian:/home/lsi# cd /etc/openvpn/ 
+```
+
+- Mi compa me pasa su clave generada.
+
+- Hacemos reboot
+
+```
+lsi@debian:~$ openvpn --verb 5 --config /etc/openvpn/tunel.conf
+2022-11-30 21:18:16 WARNING: Compression for receiving enabled. Compression has been used in the past to break encryption. Sent packets are not compressed unless "allow-compression yes" is also set.
+2022-11-30 21:18:16 us=890146 Cipher negotiation is disabled since neither P2MP client nor server mode is enabled
+Options error: --secret fails with '/etc/openvpn/clave.key': Permission denied (errno=13)
+Options error: Please correct these errors.
+Use --help for more information.
+```
+
+
+
+### Apartado 6
+
+Para asegurarnos no perder la máquina hicimos un cron cada 10 minutos que resetea el firewall:
+
+```
+*/10 * * * * bash /home/lsi/reset_firewall.sh
+```
+
+```bash
+root@debian:/home/lsi# cat reset_firewall.sh 
+#!/bin/bash
+
+# Reset to avoid losing connections
+iptables -F
+iptables -X
+iptables -Z
+iptables -P INPUT ACCEPT
+iptables -P OUTPUT ACCEPT
+iptables -P FORWARD ACCEPT
+```
+
+
