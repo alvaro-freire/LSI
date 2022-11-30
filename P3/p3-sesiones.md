@@ -138,10 +138,10 @@ common name: web (lo que se está certificando)
 
 /etc/apache2/ports.conf
 
-`
+```
 Listen 80
   "    443
-`
+```
 
 
 /etc/apache2/sites-available/ (default o ssl)
