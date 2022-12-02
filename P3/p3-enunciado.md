@@ -1,6 +1,18 @@
+# PRÁCTICA 3 - PROTOCOLOS SEGUROS Y AUDITORÍAS DE SEGURIDAD
 
+En esta segunda parte se muestran las soluciones a la tercera práctica. En [`p3-sesiones`](./p3-sesiones.md) se mostrarán los apuntes tomados durantes las sesiones.
 
-### Apartado 1.A
+## EJERCICIOS
+
+### Ejercicio 1
+
+Tomando como base de trabajo el SSH pruebe sus diversas utilidades:
+
+#### Apartado 1.A
+
+Abra un _shell_ remoto sobre SSH y analice el proceso que se realiza. Configure su fichero _ssh_known_hosts_ para dar soporte a la clave pública del servidor.
+
+1. Creamos el archivo `ssh_known_hosts` y metemos en él el output del ssh-keyscan a la IP de nuestro compañero:
 
 ```bash
 root@debian:/home/lsi# touch /etc/ssh/ssh_known_hosts
@@ -12,15 +24,20 @@ root@debian:/home/lsi# ssh-keyscan 10.11.49.106 >> /etc/ssh/ssh_known_hosts
 # 10.11.49.106:22 SSH-2.0-OpenSSH_8.4p1 Debian-5+deb11u1
 ```
 
+2. Vaciamos el archivo `known_hosts` de nuestro `.ssh` y probamos a hacer ssh:
+
 ```bash
-root@debian:/home/lsi# echo "" > /home/lsi/.ssh/known_hosts 
-root@debian:/home/lsi# nano /home/lsi/.ssh/known_hosts 
+root@debian:/home/lsi# echo "" > /home/lsi/.ssh/known_hosts
 root@debian:/home/lsi# ssh lsi@10.11.49.106
 lsi@10.11.49.106's password: 
 ```
 
+Vemos que no nos pone el mensaje de add new fingerprint, por lo que está bien configurado.
+
 
 ### Apartado 1.C
+
+Configure su cliente y servidor para permitir conexiones basadas en un esquema de autenticación de usuario de clave pública.
 
 como usuario lsi !!!!
 
@@ -124,6 +141,8 @@ Last login: Wed Nov 23 11:20:51 2022 from 10.20.37.153
 
 ### Apartado 2.A
 
+Configure su Autoridad Certificadora en su equipo.
+
 ```bash
 root@debian:/usr/lib/ssl/misc# ./CA.pl -newca
 CA certificate filename (or enter to create)
@@ -195,7 +214,9 @@ CA certificate is in ./demoCA/cacert.pem
 
 ### Apartado 2.B
 
-Generamos certificado para el servidor web de mi compañero:
+Cree su propio certificado para ser firmado por la Autoridad Certificado. Bueno, y fírmelo.
+
+1. Generamos certificado para el servidor web de mi compañero:
 
 ```bash
 root@debian:/usr/lib/ssl/misc# ./CA.pl -newreq-nodes
@@ -231,7 +252,7 @@ An optional company name []:
 Request is in newreq.pem, private key is in newkey.pem
 ```
 
-Firmamos el certificado:
+2. Firmamos el certificado:
 
 ```bash
 root@debian:/usr/lib/ssl/misc# ./CA.pl -sign
@@ -275,6 +296,8 @@ Signed certificate is in newcert.pem
 ```
 
 ### Apartado 2.C
+
+Configure su Apache para que únicamente proporcione acceso a un determinado directorio del árbol web bajo la condición del uso de SSL. Considere que si su clave privada está cifrada en el proceso de arranque su máquina le solicitará la correspondiente frase de paso, pudiendo dejarla inalcanzable para su sesión ssh de trabajo.
 
 Copiamos de nuestro compa el certificado firmado, la CPriv del certificado y la CPriv de la CA:
 
@@ -364,6 +387,8 @@ how to fix it, please visit the web page mentioned above.
 
 ### Apartado 3
 
+Tomando como base de trabajo el openVPN deberá configurar una VPN entre dos equipos virtuales del laboratorio que garanticen la confidencialidad entre sus comunicaciones.
+
 Cliente VPN:
 
 ```
@@ -388,9 +413,9 @@ Options error: Please correct these errors.
 Use --help for more information.
 ```
 
-
-
 ### Apartado 6
+
+En este punto, cada máquina virtual será servidor y cliente de diversos servicios (NTP, syslog, ssh, web, etc.). Configure un "firewall stateful" de máquina adecuado a la situación actual de su máquina.
 
 Para asegurarnos no perder la máquina hicimos un cron cada 10 minutos que resetea el firewall:
 
