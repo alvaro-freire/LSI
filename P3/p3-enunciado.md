@@ -65,7 +65,7 @@ The key's randomart image is:
 +----[SHA256]-----+
 ```
 
-```
+```bash
 lsi@debian:~$ ssh-keygen -t ed25519
 Generating public/private ed25519 key pair.
 Enter file in which to save the key (/home/lsi/.ssh/id_ed25519): 
@@ -89,7 +89,7 @@ The key's randomart image is:
 +----[SHA256]-----+
 ```
 
-```
+```bash
 lsi@debian:~$ ssh-keygen -t ecdsa
 Generating public/private ecdsa key pair.
 Enter file in which to save the key (/home/lsi/.ssh/id_ecdsa): 
