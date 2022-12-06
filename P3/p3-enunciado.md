@@ -389,29 +389,102 @@ how to fix it, please visit the web page mentioned above.
 
 Tomando como base de trabajo el openVPN deberá configurar una VPN entre dos equipos virtuales del laboratorio que garanticen la confidencialidad entre sus comunicaciones.
 
+Server VPN:
+
+- Creamos clave y se la pasamos a nuestro compa.
+
+```bash
+root@debian:/home/lsi# cd /etc/openvpn/
+root@debian:/etc/openvpn# openvpn --genkey --secret clave.key
+2022-12-06 20:46:22 WARNING: Using --genkey --secret filename is DEPRECATED.  Use --genkey secret filename instead.
+root@debian:/etc/openvpn# chmod 640 clave.key 
+root@debian:/etc/openvpn# chown nobody clave.key 
+root@debian:/etc/openvpn# scp clave.key lsi@10.11.48.50:/home/lsi/
+```
+
+- Configuramos creando un archivo `tunel.conf`:
+
+```bash
+root@debian:/etc/openvpn# nano tunel.conf
+root@debian:/etc/openvpn# cat tunel.conf 
+local 10.11.49.106
+remote 10.11.48.50
+dev tun1
+port 5555
+comp-lzo
+user nobody
+ping 15
+ifconfig 172.160.0.1 172.160.0.2
+secret /etc/openvpn/clave.key
+```
+
+```bash
+root@debian:/etc/openvpn# openvpn --config /etc/openvpn/tunel.conf
+2022-12-06 21:02:02 WARNING: Compression for receiving enabled. Compression has been used in the past to break encryption. Sent packets are not compressed unless "allow-compression yes" is also set.
+2022-12-06 21:02:02 Cipher negotiation is disabled since neither P2MP client nor server mode is enabled
+2022-12-06 21:02:02 WARNING: file '/etc/openvpn/clave.key' is group or others accessible
+2022-12-06 21:02:02 OpenVPN 2.5.1 x86_64-pc-linux-gnu [SSL (OpenSSL)] [LZO] [LZ4] [EPOLL] [PKCS11] [MH/PKTINFO] [AEAD] built on May 14 2021
+2022-12-06 21:02:02 library versions: OpenSSL 1.1.1n  15 Mar 2022, LZO 2.10
+2022-12-06 21:02:02 WARNING: --ping should normally be used with --ping-restart or --ping-exit
+2022-12-06 21:02:02 WARNING: you are using user/group/chroot/setcon without persist-tun -- this may cause restarts to fail
+2022-12-06 21:02:02 WARNING: you are using user/group/chroot/setcon without persist-key -- this may cause restarts to fail
+2022-12-06 21:02:02 WARNING: INSECURE cipher (BF-CBC) with block size less than 128 bit (64 bit).  This allows attacks like SWEET32.  Mitigate by using a --cipher with a larger block size (e.g. AES-256-CBC). Support for these insecure ciphers will be removed in OpenVPN 2.6.
+2022-12-06 21:02:02 WARNING: INSECURE cipher (BF-CBC) with block size less than 128 bit (64 bit).  This allows attacks like SWEET32.  Mitigate by using a --cipher with a larger block size (e.g. AES-256-CBC). Support for these insecure ciphers will be removed in OpenVPN 2.6.
+2022-12-06 21:02:02 WARNING: INSECURE cipher (BF-CBC) with block size less than 128 bit (64 bit).  This allows attacks like SWEET32.  Mitigate by using a --cipher with a larger block size (e.g. AES-256-CBC). Support for these insecure ciphers will be removed in OpenVPN 2.6.
+2022-12-06 21:02:02 TUN/TAP device tun1 opened
+2022-12-06 21:02:02 net_iface_mtu_set: mtu 1500 for tun1
+2022-12-06 21:02:02 net_iface_up: set tun1 up
+2022-12-06 21:02:02 net_addr_ptp_v4_add: 172.160.0.1 peer 172.160.0.2 dev tun1
+2022-12-06 21:02:02 TCP/UDP: Preserving recently used remote address: [AF_INET]10.11.48.50:5555
+2022-12-06 21:02:02 UDP link local (bound): [AF_INET]10.11.49.106:5555
+2022-12-06 21:02:02 UDP link remote: [AF_INET]10.11.48.50:5555
+2022-12-06 21:02:02 UID set to nobody
+2022-12-06 21:07:15 Peer Connection Initiated with [AF_INET]10.11.48.50:5555
+2022-12-06 21:07:15 WARNING: this configuration may cache passwords in memory -- use the auth-nocache option to prevent this
+2022-12-06 21:07:15 Initialization Sequence Completed
+```
+
 Cliente VPN:
 
-```
-root@debian:/home/lsi# lsmod | grep tun
-tunnel4                16384  1 sit
-ip_tunnel              32768  1 sit
-root@debian:/home/lsi# modprobe tun
-root@debian:/home/lsi# echo tun >> /etc/modules
-root@debian:/home/lsi# cd /etc/openvpn/ 
+- Hacemos lo mismo, pero utilizando la clave del servidor y configurando con las IPs que correspondan (al revés que el server).
+
+```bash
+root@debian:/home/lsi# mv clave.key /etc/openvpn/
+root@debian:/home/lsi# cd /etc/openvpn
+root@debian:/etc/openvpn# nano tunel.conf
+root@debian:/etc/openvpn# chmod 640 clave.key 
+root@debian:/etc/openvpn# chown nobody clave.key 
 ```
 
-- Mi compa me pasa su clave generada.
-
-- Hacemos reboot
-
+```bash
+root@debian:/etc/openvpn# openvpn --config /etc/openvpn/tunel.conf 
+2022-12-06 21:07:15 WARNING: Compression for receiving enabled. Compression has been used in the past to break encryption. Sent packets are not compressed unless "allow-compression yes" is also set.
+2022-12-06 21:07:15 Cipher negotiation is disabled since neither P2MP client nor server mode is enabled
+2022-12-06 21:07:15 WARNING: file '/etc/openvpn/clave.key' is group or others accessible
+2022-12-06 21:07:15 OpenVPN 2.5.1 x86_64-pc-linux-gnu [SSL (OpenSSL)] [LZO] [LZ4] [EPOLL] [PKCS11] [MH/PKTINFO] [AEAD] built on May 14 2021
+2022-12-06 21:07:15 library versions: OpenSSL 1.1.1n  15 Mar 2022, LZO 2.10
+2022-12-06 21:07:15 WARNING: --ping should normally be used with --ping-restart or --ping-exit
+2022-12-06 21:07:15 WARNING: you are using user/group/chroot/setcon without persist-tun -- this may cause restarts to fail
+2022-12-06 21:07:15 WARNING: you are using user/group/chroot/setcon without persist-key -- this may cause restarts to fail
+2022-12-06 21:07:15 WARNING: INSECURE cipher (BF-CBC) with block size less than 128 bit (64 bit).  This allows attacks like SWEET32.  Mitigate by using a --cipher with a larger block size (e.g. AES-256-CBC). Support for these insecure ciphers will be removed in OpenVPN 2.6.
+2022-12-06 21:07:15 WARNING: INSECURE cipher (BF-CBC) with block size less than 128 bit (64 bit).  This allows attacks like SWEET32.  Mitigate by using a --cipher with a larger block size (e.g. AES-256-CBC). Support for these insecure ciphers will be removed in OpenVPN 2.6.
+2022-12-06 21:07:15 WARNING: INSECURE cipher (BF-CBC) with block size less than 128 bit (64 bit).  This allows attacks like SWEET32.  Mitigate by using a --cipher with a larger block size (e.g. AES-256-CBC). Support for these insecure ciphers will be removed in OpenVPN 2.6.
+2022-12-06 21:07:15 TUN/TAP device tun1 opened
+2022-12-06 21:07:15 net_iface_mtu_set: mtu 1500 for tun1
+2022-12-06 21:07:15 net_iface_up: set tun1 up
+2022-12-06 21:07:15 net_addr_ptp_v4_add: 172.160.0.2 peer 172.160.0.1 dev tun1
+2022-12-06 21:07:15 TCP/UDP: Preserving recently used remote address: [AF_INET]10.11.49.106:5555
+2022-12-06 21:07:15 UDP link local (bound): [AF_INET]10.11.48.50:5555
+2022-12-06 21:07:15 UDP link remote: [AF_INET]10.11.49.106:5555
+2022-12-06 21:07:15 UID set to nobody
+2022-12-06 21:07:24 Peer Connection Initiated with [AF_INET]10.11.49.106:5555
+2022-12-06 21:07:24 WARNING: this configuration may cache passwords in memory -- use the auth-nocache option to prevent this
+2022-12-06 21:07:24 Initialization Sequence Completed
 ```
-lsi@debian:~$ openvpn --verb 5 --config /etc/openvpn/tunel.conf
-2022-11-30 21:18:16 WARNING: Compression for receiving enabled. Compression has been used in the past to break encryption. Sent packets are not compressed unless "allow-compression yes" is also set.
-2022-11-30 21:18:16 us=890146 Cipher negotiation is disabled since neither P2MP client nor server mode is enabled
-Options error: --secret fails with '/etc/openvpn/clave.key': Permission denied (errno=13)
-Options error: Please correct these errors.
-Use --help for more information.
-```
+
+- Hacemos reboot de las dos máquinas.
+
+
 
 ### Apartado 6
 
