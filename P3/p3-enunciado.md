@@ -216,7 +216,7 @@ CA certificate is in ./demoCA/cacert.pem
 
 Cree su propio certificado para ser firmado por la Autoridad Certificado. Bueno, y fírmelo.
 
-1. Generamos certificado para el servidor web de mi compañero:
+1. Generamos certificado para nuestro propio servidor:
 
 ```bash
 root@debian:/usr/lib/ssl/misc# ./CA.pl -newreq-nodes
@@ -240,7 +240,7 @@ State or Province Name (full name) [Some-State]:
 Locality Name (eg, city) []:
 Organization Name (eg, company) [Internet Widgits Pty Ltd]:lsi
 Organizational Unit Name (eg, section) []:
-Common Name (e.g. server FQDN or YOUR name) []:pelayo
+Common Name (e.g. server FQDN or YOUR name) []:alvaro
 Email Address []:
 
 Please enter the following 'extra' attributes
@@ -272,7 +272,7 @@ Certificate Details:
             countryName               = AU
             stateOrProvinceName       = Some-State
             organizationName          = lsi
-            commonName                = pelayo
+            commonName                = alvaro
         X509v3 extensions:
             X509v3 Basic Constraints: 
                 CA:FALSE
@@ -299,16 +299,6 @@ Signed certificate is in newcert.pem
 
 Configure su Apache para que únicamente proporcione acceso a un determinado directorio del árbol web bajo la condición del uso de SSL. Considere que si su clave privada está cifrada en el proceso de arranque su máquina le solicitará la correspondiente frase de paso, pudiendo dejarla inalcanzable para su sesión ssh de trabajo.
 
-Copiamos de nuestro compa el certificado firmado, la CPriv del certificado y la CPriv de la CA:
-
-```bash
-root@debian:/home/lsi# scp lsi@10.11.49.106:/home/lsi/certs_to_copy/* compa_cert 
-lsi@10.11.49.106's password: 
-cacert.pem                                    100% 4295     3.5MB/s   00:00    
-newcert.pem                                   100% 4424     4.9MB/s   00:00    
-newkey.pem                                    100% 1704     2.3MB/s   00:00
-```
-
 Activamos ssl en apache:
 
 ```bash
@@ -326,39 +316,36 @@ To activate the new configuration, you need to run:
   systemctl restart apache2
 ```
 
-Copiamos los ficheros a nuestra carpeta en `/etc/apache2/ssl`:
+Copiamos el certificado firmado, la CPriv del certificado y la CPriv de la CA en `/etc/apache2/ssl/alvaro`:
 
 ```bash
-root@debian:/etc/apache2# mkdir ssl
-root@debian:/etc/apache2# cd ssl
-root@debian:/etc/apache2/ssl# mkdir alvaro
-root@debian:/etc/apache2/ssl# cd alvaro/
-root@debian:/etc/apache2/ssl/alvaro# cp /home/lsi/compa_cert/* .
+root@debian:/usr/lib/ssl/misc# cp newkey.pem newcert.pem demoCA/cacert.pem /etc/apache2/ssl/alvaro
 ```
 
-Modificamos los permisos para que queden así:
+Configuramos nuestro servidor apache2:
 
 ```bash
-root@debian:/etc/apache2/ssl/alvaro# ls -l
-total 20
--rw-r----- 1 root root 4295 nov 30 11:43 cacert.pem
--rw-r----- 1 root root 4424 nov 30 11:43 newcert.pem
--rw------- 1 root root 1704 nov 30 11:43 newkey.pem
-```
+root@debian:/etc/apache2/sites-available# cp 000-default.conf default-ssl.conf 
+root@debian:/etc/apache2/sites-available# nano default-ssl.conf 
+root@debian:/etc/apache2/sites-available# cat default-ssl.conf 
+<VirtualHost *:443>
+	ServerName alvaro
+	DocumentRoot /var/www/html
 
-Modificamos el `/etc/apache2/sites-available/default-ssl.conf`:
+	SSLEngine On
+	SSLCertificateFile /etc/apache2/ssl/alvaro/newcert.pem
+	SSLCertificateKeyFile /etc/apache2/ssl/alvaro/newkey.pem
+	SSLCACertificateFile /etc/apache2/ssl/alvaro/cacert.pem
 
-```
-#   Enable/Disable SSL for this virtual host.
-SSLEngine on
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
 
-#   A self-signed (snakeoil) certificate can be created by inst>
-#   the ssl-cert package. See
-#   /usr/share/doc/apache2/README.Debian.gz for more info.
-#   If both key and certificate are stored in the same file, on>
-#   SSLCertificateFile directive is needed.
-SSLCertificateFile      /etc/apache2/ssl/alvaro/newcert.pem
-SSLCertificateKeyFile /etc/apache2/ssl/alvaro/newkey.pem
+# vim: syntax=apache ts=4 sw=4 sts=4 sr noet
+root@debian:/etc/apache2/sites-available# a2ensite default-ssl
+Enabling site default-ssl.
+To activate the new configuration, you need to run:
+  systemctl reload apache2
 ```
 
 Actualizamos apache:
@@ -367,22 +354,91 @@ Actualizamos apache:
 root@debian:/etc/apache2/sites-available# systemctl restart apache2
 ```
 
-Comprobamos desde nuestro máquina personal, con el cacert.pem copiado:
+Desde nuestra máquina personal:
 
 ```zsh
-╭─alvarofreire at alvaro-msi in ~/cert 22-11-30 - 19:50:35
-╰─○ curl --cacert cacert.pem https://10.11.48.50
-curl: (60) SSL: certificate subject name 'alvaro' does not match target host name '10.11.48.50'
-More details here: https://curl.se/docs/sslcerts.html
+╭─alvarofreire at alvaro-msi in ~/cert 22-12-07 - 11:33:36
+╰─○ sudo cp cacert.pem /usr/local/share/ca-certificates/ca.crt
+[sudo] password for alvarofreire:
+```
 
-curl failed to verify the legitimacy of the server and therefore could not
-establish a secure connection to it. To learn more about this situation and
-how to fix it, please visit the web page mentioned above.
-╭─alvarofreire at alvaro-msi in ~/cert 22-11-30 - 19:50:45
-╰─○ curl --cacert cacert.pem https://alvaro     
-<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>Álvaro Freire — Software Developer</title>
-...
-...
+Actualizamos los `ca-certificates`:
+
+```zsh
+╭─alvarofreire at alvaro-msi in ~/cert 22-12-07 - 11:37:09
+╰─○ sudo update-ca-certificates 
+Updating certificates in /etc/ssl/certs...
+rehash: warning: skipping ca-certificates.crt,it does not contain exactly one certificate or CRL
+1 added, 0 removed; done.
+Running hooks in /etc/ca-certificates/update.d...
+
+Adding debian:ca.pem
+done.
+Updating Mono key store
+Mono Certificate Store Sync - version 6.8.0.105
+Populate Mono certificate store from a concatenated list of certificates.
+Copyright 2002, 2003 Motus Technologies. Copyright 2004-2008 Novell. BSD licensed.
+
+Importing into legacy system store:
+I already trust 127, your new list has 128
+Certificate added: C=AU, S=Some-State, O=lsi, CN=web
+1 new root certificates were added to your trust store.
+Import process completed.
+
+Importing into BTLS system store:
+I already trust 127, your new list has 128
+Certificate added: C=AU, S=Some-State, O=lsi, CN=web
+1 new root certificates were added to your trust store.
+Import process completed.
+Done
+done.
+```
+
+Nos aseguramos de tenernos en nuestro `/etc/hosts`:
+
+```zsh
+╭─alvarofreire at alvaro-msi in ~/cert 22-12-07 - 11:38:58
+╰─○ cat /etc/hosts             
+127.0.0.1 view-localhost
+127.0.0.1	localhost
+127.0.1.1	alvaro-msi
+10.11.48.50	alvaro
+
+# The following lines are desirable for IPv6 capable hosts
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+```
+
+Comprobamos con lynx:
+
+```lynx
+                                              Álvaro Freire — Software Developer
+   Hi! My name's Álvaro.
+
+   I'm a passionate developer based in A Coruña, currently @ Innogando.
+   I'm really into JavaScript, React and Python and building cool products
+   with them. Here's some of my code :)
+   socialmedia socialmedia
+
+   LinkedIn
+   socialmedia socialmedia
+
+   GitHub
+   socialmedia socialmedia
+
+   Twitter
+   socialmedia socialmedia
+
+   Instagram
+
+
+
+Commands: Use arrow keys to move, '?' for help, 'q' to quit, '<-' to go back.
+  Arrow keys: Up and Down to move.  Right to follow a link; Left to go back.
+ H)elp O)ptions P)rint G)o M)ain screen Q)uit /=search [delete]=history list
 ```
 
 ### Apartado 3
