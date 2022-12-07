@@ -575,6 +575,9 @@ iptables -Z
 iptables -P INPUT ACCEPT
 iptables -P OUTPUT ACCEPT
 iptables -P FORWARD ACCEPT
+
+# Write reset log:
+/bin/echo "$(date): firewall reset" >> /home/lsi/Documentos/firewall/fw_reset.log
 ```
 
 
