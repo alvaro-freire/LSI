@@ -484,7 +484,19 @@ root@debian:/etc/openvpn# openvpn --config /etc/openvpn/tunel.conf
 
 - Hacemos reboot de las dos máquinas.
 
+```bash
+lsi@debian:~$ ping 172.160.0.1
+PING 172.160.0.1 (172.160.0.1) 56(84) bytes of data.
+64 bytes from 172.160.0.1: icmp_seq=1 ttl=64 time=0.929 ms
+64 bytes from 172.160.0.1: icmp_seq=2 ttl=64 time=0.837 ms
+64 bytes from 172.160.0.1: icmp_seq=3 ttl=64 time=0.890 ms
+64 bytes from 172.160.0.1: icmp_seq=4 ttl=64 time=0.977 ms
+64 bytes from 172.160.0.1: icmp_seq=5 ttl=64 time=0.857 ms
 
+--- 172.160.0.1 ping statistics ---
+5 packets transmitted, 5 received, 0% packet loss, time 4023ms
+rtt min/avg/max/mdev = 0.837/0.898/0.977/0.050 ms
+```
 
 ### Apartado 6
 
